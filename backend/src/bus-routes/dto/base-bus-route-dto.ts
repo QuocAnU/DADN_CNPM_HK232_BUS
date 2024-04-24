@@ -39,7 +39,4 @@ export class BaseBusRouteDto {
     deleted: Boolean = false;
 }
 
-function Primary(): (target: BaseBusRouteDto, propertyKey: "route_no") => void {
-    throw new Error("Function not implemented.");
-}
  
