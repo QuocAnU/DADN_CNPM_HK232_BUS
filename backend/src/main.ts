@@ -17,7 +17,7 @@ async function bootstrap() {
   .setDescription("List APIs for BKBUS LINKER")
   .setVersion("1.0")
   .addTag("BusRoutes")
-  // .addTag("Transactions")
+  .addTag("Bus")
   // .addTag("Wallets")
   .build();
 

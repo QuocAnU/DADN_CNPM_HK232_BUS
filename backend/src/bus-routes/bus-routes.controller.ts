@@ -10,7 +10,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class BusRoutesController {
   constructor(private readonly busRoutesService: BusRoutesService) {}
 
-  @Post("bus-routes/create")
+  @Post("create")
   async create(@Body() createBusRouteDto: CreateBusRouteDto) {
     try {
        return await this.busRoutesService.create(createBusRouteDto);
@@ -21,7 +21,7 @@ export class BusRoutesController {
    
   }
 
-  @Get("bus-routes/all")
+  @Get("all")
   async findAll() {
     try {
         return await this.busRoutesService.findAll();
@@ -32,7 +32,7 @@ export class BusRoutesController {
    
   }
 
-  @Get('bus-routes/:route_no')
+  @Get(':route_no')
   async findOneByName(@Param('route_no') route_no: string) {
     try {
         return await this.busRoutesService.findOneByRouteNo(route_no);
@@ -43,7 +43,7 @@ export class BusRoutesController {
     
   }
 
-  @Patch('bus-routes/:id')
+  @Patch(':id')
   async update(@Param('id') id: string, @Body() updateBusRouteDto: UpdateBusRouteDto) {
     try {
         return await this.busRoutesService.updateById(id, updateBusRouteDto);
@@ -54,7 +54,7 @@ export class BusRoutesController {
     
   }
 
-  @Delete('bus-routes/:id')
+  @Delete(':id')
   async remove(@Param('id') id: string) {
      try {
         return await this.busRoutesService.remove(id);
