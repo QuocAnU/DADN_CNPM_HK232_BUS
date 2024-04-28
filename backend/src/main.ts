@@ -18,6 +18,7 @@ async function bootstrap() {
   .setVersion("1.0")
   .addTag("BusRoutes")
   .addTag("Bus")
+  .addTag("BusStops")
   // .addTag("Wallets")
   .build();
 
