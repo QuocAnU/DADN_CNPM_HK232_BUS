@@ -1,0 +1,85 @@
+.header {
+    width: 100%;
+    height: 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    padding: 1rem 0;
+    background-color: #277BFC;
+    color: white;
+  }
+  #app-name {
+    font-size: 1.5rem;
+    display: inline-block;
+    
+    margin-left: 20px;
+    
+  }
+  .left {
+    margin-left: 3rem;
+    display: flex;
+    align-items: center;
+  }
+  .logo {
+    height: 60px;
+    width: 60px;
+  }
+  
+  .nav {
+    display: flex;
+    margin-right: 10rem;
+    gap: 1rem;
+    background-color: #0A4FB9;
+    border-radius: 16px;
+    height: 40px;
+    width: 100px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .nav a {
+    color: white;
+    text-decoration: none;
+    
+  }
+  
+  .nav a:hover {
+    text-decoration: underline;
+  }
+
+  .list {
+    position: absolute;
+    z-index: 1000;
+    top: 82px;
+  
+    left: 0;
+    background-color: white;
+    height: 1000px;
+    width: 20%;
+    
+  }
+  .title {
+    margin: 5px 0 0 50% ;
+    height: 30px;
+    transform: translateX(-50%);
+    width: fit-content;
+    padding: 0;
+  }
+  .search {
+    margin: 5px 0 0 50% ;
+    transform: translateX(-50%);
+    width: fit-content;
+    height: 30px;
+    padding-left: 30px;
+    border-radius: 16px;
+    width: 80%;
+  }
+  .search-icon {
+    position: absolute;
+    top: 74px;
+    z-index: 1000;
+    left: 20px;
+    transform: translateY(-50%);
+    color: #ccc;
+  }
