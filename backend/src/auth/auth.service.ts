@@ -26,7 +26,7 @@ export class AuthService {
     if (user && (await compare(userDto.password, user.password))) {
       return {
         code: HttpStatus.OK,
-        message: SUCCESS_EXCEPTION.OK,
+        message: "login successful",
         data: {
           id: user.id,
           email: user.email,
@@ -58,10 +58,12 @@ export class AuthService {
     });
     return {
       code: HttpStatus.OK,
-      message: SUCCESS_EXCEPTION.OK,
+      message: "successfully registered",
       data: {
+        fullname: newUser.fullname,
         createdAt: newUser.createdAt,
         email: newUser.email,
+        
       },
     };
   }
