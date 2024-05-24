@@ -34,7 +34,11 @@ export class BaseBusRouteDto {
     @ApiProperty()
     organization: string;
 
+    @ApiProperty()
+    start_address: string
 
+    @ApiProperty()
+    end_address: string
 
     deleted: Boolean = false;
 }
