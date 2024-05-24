@@ -7,6 +7,12 @@ export class UserRegister {
     required: true,
   })
   email: string;
+  @ApiProperty({
+    example: 'quocan',
+    description: 'Name of the user',
+    required: true,
+  })
+  fullname: string;
 
   @ApiProperty({
     example: '2023-05-14T00:00:00.000Z',
