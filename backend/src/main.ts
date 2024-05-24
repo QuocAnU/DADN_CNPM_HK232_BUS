@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -12,6 +13,8 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.useGlobalPipes(new ValidationPipe());
+
   const config = new DocumentBuilder()
   .setTitle("BKBus Linker APIs")
   .setDescription("List APIs for BKBUS LINKER")
@@ -19,7 +22,7 @@ async function bootstrap() {
   .addTag("BusRoutes")
   .addTag("Bus")
   .addTag("BusStops")
-  // .addTag("Wallets")
+  .addTag("Users")
   .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -34,7 +37,7 @@ async function bootstrap() {
       "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css",
     ],
   });
-
-  await app.listen(3001);
+  const port = process.env.PORT
+  await app.listen('port');
 }
 bootstrap();
