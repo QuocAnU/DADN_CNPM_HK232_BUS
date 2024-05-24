@@ -9,5 +9,6 @@ export class BaseBusDto {
     @ApiProperty()
     route_no: string
 
+    createdAt: Date
     deleted: Boolean = false;
 }
