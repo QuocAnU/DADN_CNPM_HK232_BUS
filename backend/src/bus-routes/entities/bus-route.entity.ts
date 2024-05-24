@@ -31,6 +31,12 @@ export class BusRoute {
     route_type: string;
     @Prop({ required: true })
     between_two_buses: string
+
+    @Prop({ required: true })
+    start_address: string
+
+    @Prop({ required: true })
+    end_address: string
     
     @Prop({ required: true })
     createdAt: Date;
