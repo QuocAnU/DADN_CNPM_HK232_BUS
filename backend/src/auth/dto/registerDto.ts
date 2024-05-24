@@ -21,10 +21,7 @@ export class RegisterDto {
   password: string;
 
   @ApiProperty()
-  type: string;
   @IsNotEmpty()
   @IsString()
-
-  
   fullname: string;
 }

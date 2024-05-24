@@ -5,8 +5,9 @@ export class BaseBusStopDto {
     @ApiProperty()
     name: string;
     
-    // @ApiProperty()
-    // address: string;
+    @ApiProperty()
+    address: string;
+    
     @ApiProperty()
     route_no: string;
 

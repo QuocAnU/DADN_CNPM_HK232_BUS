@@ -28,7 +28,7 @@ export class AuthService {
         code: HttpStatus.OK,
         message: SUCCESS_EXCEPTION.OK,
         data: {
-          id: user._id,
+          id: user.id,
           email: user.email,
           fullname: user.fullname,
           createdAt: user.createdAt,
