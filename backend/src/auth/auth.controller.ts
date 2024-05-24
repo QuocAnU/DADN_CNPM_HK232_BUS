@@ -6,7 +6,7 @@ import { LoginDto, RegisterDto } from './dto';
 import { UserLogin, UserRegister } from './types';
 
 @Controller('auth')
-@ApiTags('Auth')
+// @ApiTags('Auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

@@ -4,6 +4,7 @@ export class UserLogin {
   @ApiProperty({ example: '0123456789', description: 'The user ID' })
   id: string;
 
+
   @ApiProperty({ example: 'john@example.com', description: 'The user email' })
   email: string;
 

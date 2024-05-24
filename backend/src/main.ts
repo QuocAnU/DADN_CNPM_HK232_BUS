@@ -22,7 +22,7 @@ async function bootstrap() {
   .addTag("BusRoutes")
   .addTag("Bus")
   .addTag("BusStops")
-  .addTag("Users")
+  .addTag("Auths")
   .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -37,7 +37,7 @@ async function bootstrap() {
       "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css",
     ],
   });
-  const port = process.env.PORT
-  await app.listen('port');
+  
+  await app.listen(3001);
 }
 bootstrap();
