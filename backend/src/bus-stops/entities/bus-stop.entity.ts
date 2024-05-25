@@ -11,7 +11,10 @@ export class BusStop {
     name : string;
 
     @Prop({ required: true })
-    address: string;
+    latitude: string;
+
+    @Prop({ required: true })
+    longitute: string
     
     @Prop({ required: true })
     route_no : string;
