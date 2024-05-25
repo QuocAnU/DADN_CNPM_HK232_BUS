@@ -1,23 +1,17 @@
+import QuanLyTT from "./Pages/QuanLyTT";
+import ForgetPass from "./Pages/ForgetPass";
+import Login from "./Pages/Login";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import './App.css';
-import React from 'react'; 
-
-import MapComponent, {Header, List} from './Components/MapComponent';
-
-
-function App() {
+export default function App() {
   return (
-    <div style = {{height: '1000px'}}>
-        <Header></Header>
-        <List></List>
-        <MapComponent />
-        
-    </div>
-      
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/quanlytt" element={<QuanLyTT />} />
+        <Route path="/forgetpass" element={<ForgetPass />} />
+      </Routes>
+    </Router>
   );
-  
-  
-  
 }
-
-export default App;
