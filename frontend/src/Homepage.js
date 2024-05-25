@@ -12,12 +12,19 @@ class HomePage extends React.Component {
         }
     };
 
+    updateBusStops = (busStops) => {
+        if (this.mapComponentRef.current) {
+            // console.log(busStops);
+            this.mapComponentRef.current.setState({ busStops });
+        }
+    };
+
     render() {
         return (
             <div className="HomePage">
                 <Header />
                 <div className="main-content">
-                    <List updateRoute={this.updateRoute} />
+                    
                     <MapComponent ref={this.mapComponentRef} />
                 </div>
             </div>

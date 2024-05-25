@@ -1,29 +1,15 @@
-// src/components/MapComponent.js
-import React, {  Component  } from 'react';
+import React, { Component } from 'react';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import "./MapComponent.css";
-import logo from "../Image/logo.png"
 import ReactMapGL, { Marker, NavigationControl, Source, Layer } from '@goongmaps/goong-map-react';
 import '@goongmaps/goong-js/dist/goong-js.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import locationImage from "../Image/location.png";
 import bus from "../Image/image.png";
 import AddressSearch from './AddressSearch';
-// URL của endpoint geocode
-
-const GOONG_MAPTILES_KEY = 'zmriqrF5QScgd1LQ4yIxJ4itVMjQBsqFMxpkSeVG'; // Set your goong maptiles key here
+import List from './List';
+const GOONG_MAPTILES_KEY = 'zmriqrF5QScgd1LQ4yIxJ4itVMjQBsqFMxpkSeVG';
 const GOONG_API_KEY ='IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c';
-// Fix default marker icon issue
-// Fix default marker icon issue
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-});
 
 const decodePolyline = (encoded) => {
     let index = 0;
@@ -70,8 +56,10 @@ const processResponse = (data) => {
         const routeCoordinates = [];
 
         legs.forEach((leg) => {
+            
             const steps = leg.steps;
             steps.forEach((step) => {
+                // console.log(step);
                 const polyline = step.polyline;
                 const decodedPolyline = decodePolyline(polyline.points);
                 routeCoordinates.push(...decodedPolyline);
@@ -90,6 +78,8 @@ const fetchDirections = async (startAddress, endAddress) => {
     try {
         const response = await fetch(url);
         const data = await response.json();
+        console.log("Các tọa độ giữa đầu cuối tuyến xe", data);
+        
         if (data.routes && data.routes.length > 0) {
             return processResponse(data);
         } else {
@@ -118,7 +108,8 @@ class MapComponent extends Component {
                 longitude: 0,
                 zoom: 3
             },
-            currentLocation: null
+            currentLocation: null,
+            busStopsWithCoords: [] // State to store bus stops with coordinates
         };
     }
 
@@ -140,39 +131,41 @@ class MapComponent extends Component {
                 console.error('Error getting current location:', error);
             }
         );
+        this.fetchAllBusStops();
     }
 
-    handleSuggestionSelect = async (suggestion) => {
-        const location = await this.getPlaceDetails(suggestion.place_id);
-        if (location && this.state.currentLocation) {
-            const routeCoords = await fetchDirections(
-                { lat: this.state.currentLocation.latitude, lng: this.state.currentLocation.longitude },
-                location
-            );
-            this.setState({ routeCoordinates: routeCoords });
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.startLocation !== this.props.startLocation || prevProps.endLocation !== this.props.endLocation) {
+            if (this.props.startLocation && this.props.endLocation) {
+                this.updateRoute(this.props.startLocation, this.props.endLocation);
+            }
+        }
+
+        // Log to verify busStopsWithCoords changes
+        if (prevState.busStopsWithCoords !== this.state.busStopsWithCoords) {
+            console.log('Bus stops updated:', this.state.busStopsWithCoords);
+        }
+    }
+
+    fetchAllBusStops = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/bus-stop/all');
+            const busStopsWithCoords = response.data.map((busStop) => ({
+                ...busStop,
+                location: { lat: busStop.latitude, lng: busStop.longitude }
+            }));
+            this.setState({ busStopsWithCoords });
+        } catch (error) {
+            console.error('Error fetching bus stops:', error);
         }
     };
 
-    getPlaceDetails = async (placeId) => {
-        try {
-            const response = await axios.get(`https://rsapi.goong.io/Place/Detail?api_key=${GOONG_API_KEY}&place_id=${placeId}`);
-            const location = response.data.result.geometry.location;
-            if (location) {
-                this.setState({
-                    location: { lat: location.lat, lng: location.lng },
-                    viewport: {
-                        ...this.state.viewport,
-                        latitude: location.lat,
-                        longitude: location.lng,
-                        zoom: 14
-                    }
-                });
-            }
-            return location;
-        } catch (error) {
-            console.error('Lỗi khi lấy thông tin chi tiết địa điểm:', error);
-            return null;
-        }
+    updateBusStops = (busStops) => {
+        const busStopsWithCoords = busStops.map((busStop) => ({
+            ...busStop,
+            location: { lat: busStop.latitude, lng: busStop.longitude }
+        }));
+        this.setState({ busStopsWithCoords });
     };
 
     updateRoute = async (startLocation, endLocation) => {
@@ -189,6 +182,8 @@ class MapComponent extends Component {
             });
         }
     };
+
+    mapRef = React.createRef();
 
     render() {
         const routeLayer = {
@@ -208,6 +203,7 @@ class MapComponent extends Component {
         return (
             <div style={{ position: 'relative', width: '100%' }}>
                 <AddressSearch onSuggestionSelect={this.handleSuggestionSelect} />
+                <List updateRoute={this.updateRoute} updateBusStops={this.updateBusStops} />
                 <ReactMapGL
                     {...this.state.viewport}
                     onViewportChange={(nextViewport) => this.setState({ viewport: nextViewport })}
@@ -223,21 +219,28 @@ class MapComponent extends Component {
                     )}
                     {this.state.location && (
                         <Marker latitude={this.state.location.lat} longitude={this.state.location.lng}>
-                            <img src={locationImage} alt="location" style={{ height: '25px', width: '30px' }} />
+                            <img src={locationImage} alt="location" style={{ height: '40px', width: '40px' }} />
                         </Marker>
                     )}
-                    {this.state.routeCoordinates.length > 0 && (
-                        <Source id="route" type="geojson" data={{
-                            type: 'Feature',
-                            properties: {},
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: this.state.routeCoordinates
-                            }
-                        }}>
-                            <Layer {...routeLayer} />
-                        </Source>
-                    )}
+                    <Source id="route" type="geojson" data={{
+                        type: 'Feature',
+                        properties: {},
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: this.state.routeCoordinates,
+                        }
+                    }}>
+                        <Layer {...routeLayer} />
+                    </Source>
+                    {
+                        this.state.busStopsWithCoords.map(busStop => (
+                            busStop.location && busStop.location.lat && busStop.location.lng && (
+                                <Marker key={busStop._id} latitude={busStop.location.lat} longitude={busStop.location.lng}>
+                                    <img src={bus} alt="bus stop" style={{ height: '20px', width: '20px' }} />
+                                </Marker>
+                            )
+                        ))
+                    }
                 </ReactMapGL>
             </div>
         );
@@ -245,18 +248,3 @@ class MapComponent extends Component {
 }
 
 export default MapComponent;
-export class Header extends Component {
-    render() {
-        return (
-            <div className="header">
-                <div className="left">
-                    <img src={logo} alt="logo" className='logo'/>
-                    <h1 id="app-name">BUS LINKER</h1>
-                </div>
-                <button className="nav">
-                    <a href="#home">Đăng nhập</a>
-                </button>
-            </div>
-        );
-    }
-}

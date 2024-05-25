@@ -15,7 +15,8 @@ class List extends Component {
             data: [],
             startLocation: null,
             endLocation: null,
-            error: null
+            error: null,
+            busStops: []
         };
     }
 
@@ -24,9 +25,8 @@ class List extends Component {
             .then((response) => {
                 this.setState({
                     data: response.data,
-                    results: response.data // Khởi tạo kết quả tìm kiếm với tất cả dữ liệu
+                    results: response.data
                 });
-                console.log("Data: ", response.data);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
@@ -66,10 +66,10 @@ class List extends Component {
         try {
             const response = await fetch(url);
             const data = await response.json();
-
             const response1 = await fetch(url1);
             const data1 = await response1.json();
             if (data.results && data.results.length > 0) {
+                
                 const location = data.results[0].geometry.location;
                 this.setState({ endLocation: location });
             } else {
@@ -82,8 +82,27 @@ class List extends Component {
             } else {
                 this.setState({ error: 'Geocoding failed: No results found', startLocation: null });
             }
+
+            // Fetch bus stops for the selected route
+
+            const busStopsResponse = await axios.get(`http://localhost:3001/bus-stop/all`);
+            var filteredBusStops; 
+            if (item.route_no){
+                filteredBusStops = busStopsResponse.data.filter(item1 => item1.route_no === item.route_no);
+               
+                
+            }
+            else {
+                filteredBusStops = busStopsResponse.data;
+            }
+            console.log("Filtered bus stops: ", filteredBusStops);
+            this.setState({ busStops: filteredBusStops }); // array of bus stops
+            this.props.updateBusStops(filteredBusStops); // Pass bus stops to MapComponent
+
+            
         } catch (error) {
-            this.setState({ error: 'Error: ' + error.message, endLocation: null });
+            console.error('Error fetching geocoding data:', error);
+            this.setState({ error: 'Geocoding failed: ' + error.message, endLocation: null });
         }
     };
 
@@ -107,7 +126,7 @@ class List extends Component {
                             <div key={item.id}>
                                 <div className="item" onClick={() => this.getItemClicked(item)}>
                                     <p>Tuyến xe buýt số {item.route_no || "NULL"}</p>
-                                    <p>{item.schedule || "NULL"}</p>
+                                    <p>{item.start_address || "NULL"} - {item.end_address || "NULL"}</p>
                                     <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '5%' }}>{item.operation_time}</p>
                                     <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '20%' }}>{item.ticket}</p>
                                 </div>
