@@ -1,26 +1,28 @@
+import React from 'react';
+import MapComponent from './Components/MapComponent';
+import List from './Components/List';
+import Header from './Components/Header';
 
+class App extends React.Component {
+    mapComponentRef = React.createRef();
 
-import React from 'react'; 
+    updateRoute = (startLocation, endLocation) => {
+        if (this.mapComponentRef.current) {
+            this.mapComponentRef.current.updateRoute(startLocation, endLocation);
+        }
+    };
 
-import MapComponent, {Header, List} from './Components/MapComponent';
-
-// import MapWithDirections from './Components/Test';
-function App() {
-  return (
-    <div style = {{height: '1000px'}}>
-        <Header></Header>
-        <List></List>
-        <MapComponent />
-        
-        {/* <MapComponent></MapComponent> */}
-        
-        {/* <MapWithRoute></MapWithRoute> */}
-    </div>
-      
-  );
-  
-  
-  
+    render() {
+        return (
+            <div className="App">
+                <Header />
+                <div className="main-content">
+                    <List updateRoute={this.updateRoute} />
+                    <MapComponent ref={this.mapComponentRef} />
+                </div>
+            </div>
+        );
+    }
 }
 
 export default App;

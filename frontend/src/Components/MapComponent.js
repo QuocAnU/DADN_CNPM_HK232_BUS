@@ -17,6 +17,7 @@ import AddressSearch from './AddressSearch';
 const GOONG_MAPTILES_KEY = 'zmriqrF5QScgd1LQ4yIxJ4itVMjQBsqFMxpkSeVG'; // Set your goong maptiles key here
 const GOONG_API_KEY ='IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c';
 // Fix default marker icon issue
+// Fix default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -90,7 +91,6 @@ const fetchDirections = async (startAddress, endAddress) => {
         const response = await fetch(url);
         const data = await response.json();
         if (data.routes && data.routes.length > 0) {
-            console.log(data.routes);
             return processResponse(data);
         } else {
             console.error('No routes found');
@@ -149,7 +149,6 @@ class MapComponent extends Component {
                 { lat: this.state.currentLocation.latitude, lng: this.state.currentLocation.longitude },
                 location
             );
-            console.log("routeCoords: ", routeCoords);
             this.setState({ routeCoordinates: routeCoords });
         }
     };
@@ -173,6 +172,21 @@ class MapComponent extends Component {
         } catch (error) {
             console.error('Lỗi khi lấy thông tin chi tiết địa điểm:', error);
             return null;
+        }
+    };
+
+    updateRoute = async (startLocation, endLocation) => {
+        const routeCoords = await fetchDirections(startLocation, endLocation);
+        if (routeCoords) {
+            this.setState({
+                routeCoordinates: routeCoords,
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: startLocation.lat,
+                    longitude: startLocation.lng,
+                    zoom: 14
+                }
+            });
         }
     };
 
@@ -231,7 +245,6 @@ class MapComponent extends Component {
 }
 
 export default MapComponent;
-
 export class Header extends Component {
     render() {
         return (
@@ -243,132 +256,6 @@ export class Header extends Component {
                 <button className="nav">
                     <a href="#home">Đăng nhập</a>
                 </button>
-            </div>
-        );
-    }
-}
-
-export class List extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            searchTerm: '',
-            results: [],
-            data: [],
-            routeCoordinates: [],
-            start_address: '',
-            end_address: null,
-            error: null
-        };
-    }
-
-    componentDidMount() {
-        axios.get('http://localhost:3001/bus-routes/all')
-            .then((response) => {
-                this.setState({
-                    data: response.data,
-                    results: response.data // Khởi tạo kết quả tìm kiếm với tất cả dữ liệu
-                });
-                console.log("Data: ", response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.searchTerm !== this.state.searchTerm) {
-            this.updateResults();
-        }
-        if (prevState.start_address !== this.state.start_address || prevState.end_address !== this.state.end_address) {
-            this.updateRoute();
-        }
-    }
-
-    updateResults = () => {
-        const filteredData = this.state.data.filter(item =>
-            item.route_no.toString().includes(this.state.searchTerm)
-        );
-        this.setState({ results: filteredData });
-    };
-
-    updateRoute = async () => {
-        if (this.state.start_address && this.state.end_address) {
-            const routeCoords = await fetchDirections(
-                this.state.start_address, this.state.end_address
-            );
-            if (routeCoords) this.setState({ routeCoordinates: routeCoords });
-        }
-    };
-
-    handleSearchChange = (e) => {
-        this.setState({ searchTerm: e.target.value });
-    };
-
-    getItemClicked = async (item) => {
-        console.log("item: ", item.end_address, item.start_address);
-        const url = `https://rsapi.goong.io/Geocode?address=${encodeURIComponent(item.end_address)}&api_key=${GOONG_API_KEY}`;
-        const url1 = `https://rsapi.goong.io/Geocode?address=${encodeURIComponent(item.start_address)}&api_key=${GOONG_API_KEY}`;
-
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-
-            const response1 = await fetch(url1);
-            const data1 = await response1.json();
-            if (data.results && data.results.length > 0) {
-                const location = data.results[0].geometry.location;
-                this.setState({ end_address: location });
-                console.log("location: ", location)
-            } else {
-                this.setState({ error: 'Geocoding failed: No results found', end_address: null });
-                console.log(this.state.error);
-            }
-
-            if (data1.results && data1.results.length > 0) {
-                const location1 = data1.results[0].geometry.location;
-                this.setState({ start_address: location1 });
-                console.log("location1: ", location1);
-            } else {
-                this.setState({ error: 'Geocoding failed: No results found', start_address: null });
-                console.log(this.state.error);
-            }
-        } catch (error) {
-            this.setState({ error: 'Error: ' + error.message, end_address: null });
-            console.log(error);
-        }
-    };
-
-    render() {
-        return (
-            <div className="list">
-                <h3 className="title">Tra cứu</h3>
-                <hr />
-                <div className="search-container">
-                    <FontAwesomeIcon icon={faSearch} className="search-icon" />
-                    <input
-                        className="search"
-                        type="number"
-                        placeholder="Nhập số xe cần tìm"
-                        onChange={this.handleSearchChange}
-                    />
-                </div>
-                <div className="list-item">
-                    {
-                        this.state.results.length ? this.state.results.map(item => (
-                            <div key={item.id}>
-                                <div className="item" onClick={() => this.getItemClicked(item)}>
-                                    <p>Tuyến xe buýt số {item.route_no || "NULL"}</p>
-                                    <p>{item.schedule || "NULL"}</p>
-                                    <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '5%' }}>{item.operation_time}</p>
-                                    <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '20%' }}>{item.ticket}</p>
-                                </div>
-                            </div>
-                        ))
-                            :
-                            <p>Không tồn tại tuyến xe</p>
-                    }
-                </div>
             </div>
         );
     }

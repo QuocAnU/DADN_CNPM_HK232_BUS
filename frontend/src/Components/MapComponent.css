@@ -53,8 +53,6 @@
   .list {
     position: absolute;
     z-index: 1000;
-    top: 82px;
-  
     left: 0;
     background-color: white;
     height: 1000px;
