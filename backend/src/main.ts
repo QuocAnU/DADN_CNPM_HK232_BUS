@@ -16,7 +16,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-  const config = new DocumentBuilder()
+  const config = new DocumentBuilder().addBearerAuth()
   .setTitle("BKBus Linker APIs")
   .setDescription("List APIs for BKBUS LINKER")
   .setVersion("1.0")
@@ -24,6 +24,7 @@ async function bootstrap() {
   .addTag("Bus")
   .addTag("BusStops")
   .addTag("Auths")
+  .addTag("Maps")
   .build();
 
   const document = SwaggerModule.createDocument(app, config);
