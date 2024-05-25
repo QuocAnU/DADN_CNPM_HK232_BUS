@@ -1,3 +1,4 @@
+import { UpdateAuthDto } from './dto/updateAuthDto';
 
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,15 +11,14 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto, RegisterDto } from './dto';
 import { UserLogin, UserRegister } from './types';
 // import * as phoneNumberToken from 'generate-sms-verification-code';
-
-// import { MailService } from 'src/mail/mail.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel('users') private readonly userModel: Model<UserDocument>,
     private readonly jwtService: JwtService,
-    // private mailService: MailService,
+    private mailService: MailService,
   ) {}
 
   async login(userDto: LoginDto): Promise<ResponseStatus<UserLogin>> {
@@ -50,10 +50,11 @@ export class AuthService {
       throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
     }
 
-    // const otp = phoneNumberToken(6, { type: 'string' });
+    
 
     const newUser = await this.userModel.create({
       ...userDto,
+      otp:"111111",
       password: await hashPassword(userDto.password),
     });
     return {
@@ -67,26 +68,63 @@ export class AuthService {
       },
     };
   }
+   
+  async otpVerify({
+    email,
+  }: {
+    email: string;
+  }): Promise<ResponseStatus<null>> {
+    const user: any = await this.userModel.findOne({ email });
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-  // async otpVerify({
-  //   email,
-  //   otp,
-  // }: {
-  //   email: string;
-  //   otp: string;
-  // }): Promise<ResponseStatus<null>> {
-  //   const user: UserDocument = await this.userModel.findOne({ email }).lean();
-  //   if (otp != user.otp) {
-  //     console.log(otp, user);
-  //     return {
-  //       code: HttpStatus.UNAUTHORIZED,
-  //       message: ERROR_EXCEPTION.UNAUTHORIZED,
-  //     };
-  //   }
-  //   await this.userModel.findByIdAndUpdate(user._id, { active: true });
-  //   return {
-  //     code: HttpStatus.OK,
-  //     message: SUCCESS_EXCEPTION.OK,
-  //   };
-  // }
+    await this.userModel.findByIdAndUpdate(user._id, { otp: otp });
+
+    await this.mailService.sendUserConfirmation(user, otp);
+    return {
+      code: HttpStatus.OK,
+      message: "send OTP successfully",
+    };
+  }
+
+  async confirmOTP({
+    email,
+    otp
+  }: {
+    email: string;
+    otp: string
+  }) {
+    const user: any = await this.userModel.findOne({ email });
+    if (otp != user.otp) {
+      console.log(otp, user);
+      return {
+        code: HttpStatus.UNAUTHORIZED,
+        message: "Not same OTP",
+      };
+    }
+    return {
+      code: HttpStatus.OK,
+      message: "send OTP successfully",
+    };
+  }
+
+  async updatePassword(updateAuthDto: UpdateAuthDto) {
+    try {
+    const updateUser = await this.userModel
+      .findByIdAndUpdate(
+        updateAuthDto.email,
+        { ...UpdateAuthDto, updatedAt: new Date() },
+        { password: hashPassword(updateAuthDto.password) }
+      )
+      .exec();
+      
+    if (!updateUser) {
+      throw new Error("User not found");
+    }
+    
+    return updateUser;
+  } catch (error) {
+    console.error("Error updating bus route by ID:", error);
+    throw new Error("Failed to update bus route by ID");
+  }
+  }
 }

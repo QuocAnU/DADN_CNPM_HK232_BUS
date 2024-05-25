@@ -18,6 +18,9 @@ export class User {
     description: 'Whether the user account is active or not',
     default: false,
   })
+  @Prop({ default: null })
+  otp: string;
+  
   @Prop({
     default: false,
   })

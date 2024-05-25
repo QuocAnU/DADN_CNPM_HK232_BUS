@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { AdminBusRoutesModule } from './bus-routes/admin-bus-routes.module';
 import { OsmModule } from './osm/osm.module';
+import { MailModule } from './mail/mail.module';
 
 
 @Module({
@@ -20,7 +21,8 @@ import { OsmModule } from './osm/osm.module';
     BusModule,
     BusStopsModule,
     AuthModule,
-    OsmModule
+    OsmModule,
+    MailModule
 
   ],
   controllers: [],
