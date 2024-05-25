@@ -1,0 +1,12 @@
+.btn-sm {
+  background-color: #0562f1;
+  color: #ffffff;
+  font-family: Montserrat;
+  font-weight: 700;
+  align-self: center;
+  line-height: 17.07px;
+  border-radius: 16px;
+  height: 8%;
+  min-height: 8%;
+  width: 40%;
+}

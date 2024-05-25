@@ -1,0 +1,64 @@
+/* RouteCard.css */
+
+.route-card {
+  width: 300px; /* Fixed width for the card */
+  display: flex;
+  flex-direction: column;
+  background-color: #eff1f8;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  overflow: hidden; /* Prevent overflow */
+}
+
+.headCard {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.route-card p {
+  margin: 5px 0;
+  font-family: Montserrat;
+  font-size: 13.74px;
+  font-weight: 500;
+  line-height: 1.5; /* Adjust line height as needed */
+  letter-spacing: 0.14716218411922455px;
+  text-align: left;
+  overflow: hidden; /* Prevent overflow */
+  text-overflow: ellipsis; /* Display ellipsis for overflow text */
+  white-space: normal; /* Allow text to wrap */
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.details,
+.delete {
+  border-radius: 16px;
+  width: 50%; /* Adjust width as needed */
+  background-color: #d3e4ff; /* Details button color */
+  color: black;
+  font-weight: bold;
+  cursor: pointer; /* Change cursor to pointer */
+}
+
+.delete {
+  background-color: #f44336; /* Delete button color */
+  color: white;
+}
+
+.t {
+  font-family: Montserrat;
+  font-weight: 500;
+}
+
+.T {
+  font-weight: bold;
+  color: #042d6c;
+  margin-top: 0;
+  font-family: Montserrat;
+  font-weight: 800;
+}

@@ -1,0 +1,82 @@
+:root {
+  font-size: 16px; /* 1rem = 16px, điều này có thể thay đổi cho toàn trang */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #277bfc;
+  color: white;
+  flex-wrap: wrap; /* Cho phép các phần tử con wrap khi màn hình nhỏ */
+  padding: 1rem; /* 16px */
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  width: 30%;
+}
+
+.logoH {
+  margin-top: 0;
+  width: 3.75rem; /* 60px */
+  height: 3.75rem; /* 60px */
+  margin-right: 0.625rem; /* 10px */
+}
+
+#app-name {
+  font-family: Montserrat, sans-serif;
+  font-size: 1.875rem; /* 30px */
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-align: left;
+}
+
+.right {
+  margin-right: 5%;
+  display: flex;
+  align-items: center;
+}
+.searchH {
+  margin-left: 150%;
+  width: 32px;
+  height: 32px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .left {
+    width: 50%;
+  }
+
+  #app-name {
+    font-size: 1.5rem; /* 24px */
+  }
+
+  .nav {
+    padding: 0.5rem 1rem; /* 8px 16px */
+  }
+}
+
+@media (max-width: 480px) {
+  .left {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 0.625rem; /* 10px */
+  }
+
+  .right {
+    width: 100%;
+    justify-content: center;
+  }
+
+  #app-name {
+    font-size: 1.25rem; /* 20px */
+  }
+
+  .nav {
+    padding: 0.375rem 0.75rem; /* 6px 12px */
+  }
+}
