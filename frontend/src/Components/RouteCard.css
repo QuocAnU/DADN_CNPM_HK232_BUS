@@ -1,0 +1,99 @@
+/* RouteCard.css */
+
+.route-card {
+  width: 300px; /* Fixed width for the card */
+  display: flex;
+  flex-direction: column;
+  background-color: #eff1f8;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  overflow: hidden; /* Prevent overflow */
+}
+
+.headCard {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.route-card p {
+  margin: 5px 0;
+  font-family: Montserrat;
+  font-size: 13.74px;
+  font-weight: 500;
+  line-height: 1.5; /* Adjust line height as needed */
+  letter-spacing: 0.14716218411922455px;
+  text-align: left;
+  overflow: hidden; /* Prevent overflow */
+  text-overflow: ellipsis; /* Display ellipsis for overflow text */
+  white-space: normal; /* Allow text to wrap */
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.details,
+.delete {
+  margin-left: 5%;
+  border-radius: 16px;
+  width: 50%; /* Adjust width as needed */
+  background-color: #d3e4ff; /* Details button color */
+  color: black;
+  font-weight: bold;
+  cursor: pointer; /* Change cursor to pointer */
+}
+
+.delete {
+  background-color: #f44336; /* Delete button color */
+  color: white;
+}
+
+.t {
+  font-family: Montserrat;
+  font-weight: 500;
+}
+
+.T {
+  font-weight: bold;
+  color: #042d6c;
+  margin-top: 0;
+  font-family: Montserrat;
+  font-weight: 800;
+}
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Màu nền và opacity */
+  z-index: 9999; /* Đảm bảo nó hiển thị trên tất cả các phần tử khác */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5); /* Hiệu ứng bóng đổ */
+  max-width: 80%; /* Điều chỉnh kích thước popup nếu cần */
+}
+
+.close-button {
+  align-self: flex-end; /* Đặt vị trí của nút ở phía bên phải */
+  position: absolute; /* Đặt kiểu vị trí là absolute để có thể sử dụng top và right */
+  top: 10px; /* Đặt khoảng cách từ trên xuống */
+  right: 10px; /* Đặt khoảng cách từ phải sang trái */
+  cursor: pointer; /* Biến con trỏ chuột thành dấu chỉ tay khi di chuột qua nút */
+  color: red; /* Màu của chữ */
+  background: none; /* Loại bỏ background mặc định */
+  border: none; /* Loại bỏ border mặc định */
+  padding: 0; /* Loại bỏ padding */
+  font-size: 30px; /* Kích thước chữ */
+  font-weight: 600;
+}
