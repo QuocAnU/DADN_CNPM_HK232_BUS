@@ -25,6 +25,7 @@ async function bootstrap() {
   .addTag("BusStops")
   .addTag("Auths")
   .addTag("Maps")
+  .addTag("Devices")
   .build();
 
   const document = SwaggerModule.createDocument(app, config);
