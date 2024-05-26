@@ -78,6 +78,27 @@ body,
     font-size: 0.75rem;
   }
 }
+.textField {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 3%;
+}
+.titleS {
+  font-family: Montserrat;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 21.94px;
+}
+.input1 {
+  margin-top: 2%;
+  height: 30px;
+  width: 80%;
+  border-radius: 16px;
+  border-color: #f4f4f4;
+  border: solid 1px;
+  color: brown;
+}
+
 .error {
   font-family: Montserrat, sans-serif;
   font-size: 1rem; /* 14px */
