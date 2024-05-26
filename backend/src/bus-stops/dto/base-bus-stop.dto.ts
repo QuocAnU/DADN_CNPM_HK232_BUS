@@ -1,15 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { PrimaryColumn } from "typeorm";
+import { Double, PrimaryColumn } from "typeorm";
 
 export class BaseBusStopDto {
     @ApiProperty()
     name: string;
     
     @ApiProperty()
-    latitude: string;
+    latitude: number;
 
     @ApiProperty()
-    longitute: string
+    longitute: number;
     
     @ApiProperty()
     route_no: string;
