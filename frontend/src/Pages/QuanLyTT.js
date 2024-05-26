@@ -28,10 +28,10 @@ export default function QuanLyTT(props) {
         <div className="T1">Quản lý tuyến xe</div>
         <div className="mid">
           <button className="btnTTX"> Thêm tuyến xe</button>
-          <div className="search-container">
-            <FontAwesomeIcon icon={faSearch} className="search-icon" />
+          <div className="search-containerTT">
+            <FontAwesomeIcon icon={faSearch} className="search-iconTT" />
             <input
-              className="search"
+              className="searchTT"
               type="text"
               placeholder="Nhập tuyến xe cần tìm..."
             />

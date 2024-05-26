@@ -50,13 +50,13 @@ body {
   font-weight: bold;
 }
 
-.search-container {
+.search-containerTT {
   margin-left: 10px;
   position: relative;
   width: 50%;
 }
 
-.search-icon {
+.search-iconTT {
   position: absolute;
   top: 50%;
   left: 0.75rem; /* 12px */
@@ -64,7 +64,7 @@ body {
   color: gray;
 }
 
-.search {
+.searchTT {
   width: 50%;
   height: 2rem; /* 32px */
   padding-left: 3.5rem; /* 40px */
@@ -83,7 +83,7 @@ body {
     align-items: center;
   }
 
-  .search-container {
+  .search-containerTT {
     width: 80%;
     margin-top: 1rem; /* Thêm khoảng cách trên cho responsive */
   }
@@ -94,7 +94,7 @@ body {
     font-size: 1.5rem; /* 24px */
   }
 
-  .search {
+  .searchTT {
     height: 1.75rem; /* 28px */
     padding-left: 2rem; /* 32px */
   }

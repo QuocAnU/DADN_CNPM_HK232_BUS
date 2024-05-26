@@ -3,12 +3,12 @@ import search from "../Image/search.png";
 import "./HeaderAd.css";
 export default function HeaderAd(props) {
   return (
-    <div className="header">
-      <div className="left">
+    <div className="headerH">
+      <div className="leftH">
         <img src={logo} alt="logo" className="logoH" />
         <h1 id="app-name">BUS LINKER</h1>
       </div>
-      <div className="right">
+      <div className="rightH">
         {props.name}
         <a href="/login">
           <img src={search} alt="search" className="searchH" />
