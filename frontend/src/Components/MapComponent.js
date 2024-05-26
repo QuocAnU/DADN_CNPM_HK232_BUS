@@ -8,6 +8,7 @@ import locationImage from "../Image/location.png";
 import bus from "../Image/image.png";
 import AddressSearch from './AddressSearch';
 import List from './List';
+import BusStopInfo from './BusStopInfo';
 const GOONG_MAPTILES_KEY = 'zmriqrF5QScgd1LQ4yIxJ4itVMjQBsqFMxpkSeVG';
 const GOONG_API_KEY ='IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c';
 
@@ -103,13 +104,14 @@ class MapComponent extends Component {
             routeCoordinates: [],
             viewport: {
                 width: '100%',
-                height: '1000px',
+                height: '700px',
                 latitude: 0,
                 longitude: 0,
                 zoom: 3
             },
             currentLocation: null,
-            busStopsWithCoords: [] // State to store bus stops with coordinates
+            busStopsWithCoords: [], // State to store bus stops with coordinates
+            selectedBusStop: null
         };
     }
 
@@ -146,7 +148,37 @@ class MapComponent extends Component {
             console.log('Bus stops updated:', this.state.busStopsWithCoords);
         }
     }
-
+    getPlaceDetails = async (placeId) => {
+        try {
+            const response = await axios.get(`https://rsapi.goong.io/Place/Detail?api_key=${GOONG_API_KEY}&place_id=${placeId}`);
+            const location = response.data.result.geometry.location;
+            if (location) {
+                this.setState({
+                    location: { lat: location.lat, lng: location.lng },
+                    viewport: {
+                        ...this.state.viewport,
+                        latitude: location.lat,
+                        longitude: location.lng,
+                        zoom: 14
+                    }
+                });
+            }
+            return location;
+        } catch (error) {
+            console.error('Lỗi khi lấy thông tin chi tiết địa điểm:', error);
+            return null;
+        }
+    };
+    handleSuggestionSelect = async (suggestion) => {
+        const location = await this.getPlaceDetails(suggestion.place_id);
+        if (location && this.state.currentLocation) {
+            const routeCoords = await fetchDirections(
+                { lat: this.state.currentLocation.latitude, lng: this.state.currentLocation.longitude },
+                location
+            );
+            this.setState({ routeCoordinates: routeCoords });
+        }
+    };
     fetchAllBusStops = async () => {
         try {
             const response = await axios.get('http://localhost:3001/bus-stop/all');
@@ -186,6 +218,8 @@ class MapComponent extends Component {
     mapRef = React.createRef();
 
     render() {
+        // const { busStopsWithCoords } = this.props;
+        const { selectedBusStop } = this.state;
         const routeLayer = {
             id: 'route',
             type: 'line',
@@ -209,7 +243,7 @@ class MapComponent extends Component {
                     onViewportChange={(nextViewport) => this.setState({ viewport: nextViewport })}
                     goongApiAccessToken={GOONG_MAPTILES_KEY}
                 >
-                    <div style={{ position: 'absolute', left: '21%', top: '5%' }}>
+                    <div style={{ position: 'absolute', left: '21%', top: '7%' }}>
                         <NavigationControl />
                     </div>
                     {this.state.currentLocation && (
@@ -235,12 +269,23 @@ class MapComponent extends Component {
                     {
                         this.state.busStopsWithCoords.map(busStop => (
                             busStop.location && busStop.location.lat && busStop.location.lng && (
-                                <Marker key={busStop._id} latitude={busStop.location.lat} longitude={busStop.location.lng}>
-                                    <img src={bus} alt="bus stop" style={{ height: '20px', width: '20px' }} />
+                                <Marker key={busStop._id} latitude={busStop.location.lat} longitude={busStop.location.lng} onClick={() => {
+                                        console.log(busStop);
+                                        this.setState({ selectedBusStop: busStop })
+                                        
+                                        }}>
+                                    <img src={bus} alt="bus stop" style={{ height: '20px', width: '20px' }}  />
                                 </Marker>
                             )
                         ))
                     }
+                    {/* Hiển thị bảng thông tin nếu có */}
+                    {selectedBusStop && (
+                        <BusStopInfo
+                            busStop={selectedBusStop}
+                            onClose={() => this.setState({ selectedBusStop: null })}
+                        />
+                    )}
                 </ReactMapGL>
             </div>
         );
