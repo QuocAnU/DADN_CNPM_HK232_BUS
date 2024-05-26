@@ -6,7 +6,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthService } from './auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './entities/user.entity';
-// import { MailModule } from 'src/mail/mail.module';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { UserSchema } from './entities/user.entity';
         signOptions: { expiresIn: '60s' },
       }),
     }),
-    // MailModule,
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [JwtStrategy, AuthService],

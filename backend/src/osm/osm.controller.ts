@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { OsmService } from './osm.service';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags("MAPs")
+@ApiTags("Maps")
 @Controller('osm')
 export class OsmController {
   constructor(private readonly osmService: OsmService) {}

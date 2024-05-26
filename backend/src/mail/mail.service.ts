@@ -1,21 +1,22 @@
-// import { MailerService } from "@nestjs-modules/mailer";
-// import { Injectable } from "@nestjs/common";
-// // import { Account } from "src/account/entities/account.entity";
+import { MailerService } from '@nestjs-modules/mailer';
+import { Injectable } from '@nestjs/common';
+import { User } from './../auth/entities/user.entity';
+@Injectable()
+export class MailService {
+  constructor(private mailerService: MailerService) {}
 
-
-// @Injectable()
-// export class MailService {
-//     constructor(private mailerService: MailerService) {}
-
-//     async sendUserConfirmation(user: Account, otp: string) {
-//         await this.mailerService.sendMail({
-//             to: user.email,
-//             subject: 'Confirm your email',
-//             template:'./confirmation',
-//             context: {
-//                 name: user.email,
-//                 otp,
-//             }
-//         })
-//     }
-// }
+  async sendUserConfirmation(user: User, otp: string) {
+    await this.mailerService.sendMail({
+      to: user.email,
+      // from: '"Support Team" <support@example.com>', // override default from
+      subject: 'Confirm your Email',
+      template: './confirmation', // `.hbs` extension is appended automatically
+      context: {
+        // ✏️ filling curly brackets with content
+        name: user.email,
+        otp,
+        
+      },
+    });
+  }
+}
