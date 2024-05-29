@@ -75,6 +75,12 @@ export class AuthService {
     email: string;
   }): Promise<ResponseStatus<null>> {
     const user: any = await this.userModel.findOne({ email });
+    if(!user) {
+      return {
+        code: 400,
+        message:"User not found",
+      }
+    }
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     await this.userModel.findByIdAndUpdate(user._id, { otp: otp });
@@ -109,17 +115,23 @@ export class AuthService {
 
   async updatePassword(updateAuthDto: UpdateAuthDto) {
     try {
-    const updateUser = await this.userModel
-      .findByIdAndUpdate(
-        updateAuthDto.email,
-        { ...UpdateAuthDto, updatedAt: new Date() },
-        { password: hashPassword(updateAuthDto.password) }
-      )
-      .exec();
+      
+      const hashedPassword = await hashPassword(updateAuthDto.password);
+      const updateUser = await this.userModel.findOneAndUpdate(
+    { email: updateAuthDto.email },
+    { 
+      ...updateAuthDto, 
+      password: hashedPassword, 
+      updatedAt: new Date() 
+    },
+    { new: true } 
+    ).exec();
       
     if (!updateUser) {
       throw new Error("User not found");
     }
+
+    
     
     return updateUser;
   } catch (error) {
