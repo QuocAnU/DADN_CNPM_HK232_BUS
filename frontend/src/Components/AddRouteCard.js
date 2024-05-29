@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import "./AddRouteCard.css";
-
-const AddRouteCard = () => {
+import axios from "axios";
+const api = axios.create({
+  baseURL: "http://localhost:3001",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+const AddRouteCard = ({ onSuccess }) => {
   const [routeDetails, setRouteDetails] = useState({
     routeNumber: "",
     routeName: "",
@@ -23,10 +29,26 @@ const AddRouteCard = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Route Details:", routeDetails);
+    try {
+      await api.post("/admin-bus-routes/create", {
+        route_no: routeDetails.routeNumber,
+        name: routeDetails.routeName,
+        schedule: routeDetails.operatingTime,
+        operation_time: routeDetails.operatingTime,
+        ticket: routeDetails.ticketPrice,
+        ticket_student: routeDetails.discountedTicketPrice,
+        route_type: routeDetails.routeType,
+        between_two_buses: routeDetails.passingStations,
+        organization: routeDetails.organization,
+        start_address: routeDetails.startPosition,
+        end_address: routeDetails.endPosition,
+      });
+      onSuccess();
+    } catch (error) {
+      console.error("Error adding route:", error);
+    }
   };
 
   const handleReset = () => {
@@ -46,7 +68,7 @@ const AddRouteCard = () => {
 
   return (
     <div className="add-route-container">
-      <h2>Thêm tuyến xe</h2>
+      <h1>Thêm tuyến xe</h1>
       <form onSubmit={handleSubmit} className="add-route-form">
         <div className="form-group">
           <label>Tuyến xe:</label>
