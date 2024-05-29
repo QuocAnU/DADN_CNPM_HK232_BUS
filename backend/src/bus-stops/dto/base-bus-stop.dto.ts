@@ -12,7 +12,7 @@ export class BaseBusStopDto {
     longitute: number;
     
     @ApiProperty()
-    route_no: string;
+    route_no: number;
 
     deleted: Boolean = false;
 }
