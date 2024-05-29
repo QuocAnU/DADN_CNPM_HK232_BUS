@@ -1,26 +1,12 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { DeviceService } from './device.service';
-import { ApiTags } from '@nestjs/swagger';
-import { UpdateAccessTokenDto } from './dto/updateAccessTokenDto';
+import { Controller, Get, Param } from '@nestjs/common';
+import { AdafruitService } from './device.service';
 
-@ApiTags("Devices")
-@Controller('device')
-export class DevicesController {
-  constructor(private readonly deviceService: DeviceService) {}
+@Controller('adafruit')
+export class AdafruitController {
+  constructor(private readonly adafruitService: AdafruitService) {}
 
-  @Get('token')
-  async getAccessToken(
-  ) {
-    return await this.deviceService.getAccessToken()
-  }
-
-  @Post("token")
-  async updatedAccessToken(@Body() dto: UpdateAccessTokenDto ) {
-    return await this.deviceService.updateAccessToken(dto)
-  }
-
-  @Get('details') 
-  async getDetails() {
-    return await this.deviceService.fetchDeviceData()
+  @Get('/feed')
+  async getLastData() {
+    return this.adafruitService.getLastData();
   }
 }

@@ -26,13 +26,13 @@ export class BusRoutesService {
   }
 }
   async findAll(): Promise<BusRoute[]> {
-    return await this.model.find().exec();
+    return await this.model.find({deleted: false}).exec();
   }
 
 
   async findOneByRouteNo(route_no: string): Promise<BusRoute | null> {
   try {
-    const busRoute = await this.model.findOne({ route_no: route_no }).exec();
+    const busRoute = await this.model.findOne({ route_no: route_no, deleted: false }).exec();
     
     return busRoute;
   } catch (error) {
