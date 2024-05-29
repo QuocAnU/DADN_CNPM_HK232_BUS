@@ -39,6 +39,15 @@ export class BusStopsService {
   }
   }
 
+  async findByName(name: string): Promise<BusStop[]> {
+    try {
+      return await this.model.find({ name: { $regex: new RegExp(name, "i") } }).exec();
+    } catch (error) {
+      console.error("Error finding bus stop by name:", error);
+      throw new Error("Failed to find bus stop by name");
+    }
+  }
+
   // update(id: number, updateBusStopDto: UpdateBusStopDto) {
   //   return `This action updates a #${id} busStop`;
   // }
