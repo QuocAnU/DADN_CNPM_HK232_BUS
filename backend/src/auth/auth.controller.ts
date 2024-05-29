@@ -55,11 +55,7 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 500, description: 'Internal Server Error' })
   async login(@Body() userDto: LoginDto): Promise<ResponseStatus<UserLogin>> {
-<<<<<<< HEAD
-    console.log(userDto.email, userDto.password);
-=======
     console.log(userDto.email)
->>>>>>> cf3766a9a5754f4648d3fb6495a07dc74d17e616
     return await this.authService.login(userDto);
   }
 

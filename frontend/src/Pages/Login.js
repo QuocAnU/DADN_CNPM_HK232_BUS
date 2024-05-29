@@ -5,6 +5,7 @@ import LogoT from "../Components/LogoT";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+// Create an axios instance with a base URL and headers
 const api = axios.create({
   baseURL: "http://localhost:3001",
   headers: {
@@ -12,6 +13,7 @@ const api = axios.create({
   },
 });
 
+// Define an async function to handle API requests for login
 const login = async (email, password) => {
   try {
     console.log("Login", email, password);
@@ -23,12 +25,15 @@ const login = async (email, password) => {
   }
 };
 
+// Define the Login component
 export default function Login() {
+  // Manage state for email, password, and error
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate(); // Initialize navigate function
 
+  // Define the handleLogin function to manage login logic and navigation
   const handleLogin = async () => {
     try {
       const response = await login(email, password);
@@ -39,6 +44,7 @@ export default function Login() {
     }
   };
 
+  // Render the component
   return (
     <div className="bg">
       <div className="loginBox">
@@ -65,7 +71,7 @@ export default function Login() {
         </div>
         {error && <div className="error">{error}</div>}
         <ButtonSM text="Đăng nhập" onClick={handleLogin} />
-        <a href="/" className="text2">
+        <a href="/forgetpass" className="text2">
           Quên mật khẩu
         </a>
       </div>
