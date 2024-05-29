@@ -18,6 +18,7 @@ export default function QuanLyTT(props) {
           "http://localhost:3001/admin-bus-routes/all"
         );
         setRoutes(response.data); // Assuming the response data is an array of routes
+        console.log("Data: ", response.data);
       } catch (error) {
         console.error("Error fetching routes:", error);
       }
@@ -65,6 +66,12 @@ export default function QuanLyTT(props) {
               start_address={route.start_address}
               end_address={route.end_address}
               schedule={route.schedule}
+              ticket={route.ticket}
+              ticket_student={route.ticket_student}
+              route_type={route.route_type}
+              organization={route.organization}
+              name={route.name}
+              operation_time={route.operation_time}
               onDelete={handleDeleteRoute}
             />
           ))}

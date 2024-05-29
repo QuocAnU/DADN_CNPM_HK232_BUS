@@ -24,7 +24,7 @@ export default function RouteCard(props) {
 
   const handleConfirm = async () => {
     try {
-      await api.delete(`/admin-bus-routes/${props._id}`);
+      await api.delete(`/admin-bus-routes/${props.route_no}`);
       setShowDelete(false);
       // Update the parent component's state to remove the deleted route
       props.onDelete(props.route_no);
@@ -55,7 +55,7 @@ export default function RouteCard(props) {
       <p className="t">
         {props.start_address}-{props.end_address}
       </p>
-      <p className="t">{props.schedule}</p>
+      <p className="t">{props.operation_time}</p>
 
       {/* Conditionally render DetailCard as a popup */}
       {showDetail && (
