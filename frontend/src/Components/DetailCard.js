@@ -1,6 +1,7 @@
 import React from "react";
 import "./DetailCard.css";
 const DetailCard = ({ details }) => {
+  console.log("Sy ", details);
   return (
     <div className="detail-container">
       <div className="detail-header">Chi tiết</div>
@@ -12,7 +13,7 @@ const DetailCard = ({ details }) => {
           <strong>Tên tuyến:</strong> {details.name}
         </div>
         <div className="detail-item">
-          <strong>Thời gian hoạt động:</strong> {details.schedule}
+          <strong>Thời gian hoạt động:</strong> {details.operation_time}
         </div>
         <div className="detail-item">
           <strong>Giá vé:</strong> {details.ticket}

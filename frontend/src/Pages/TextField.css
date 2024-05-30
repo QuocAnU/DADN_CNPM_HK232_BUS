@@ -9,7 +9,7 @@
   font-weight: 700;
   line-height: 21.94px;
 }
-.input {
+.input1 {
   margin-top: 2%;
   height: 30px;
   width: 80%;
@@ -17,4 +17,5 @@
   border-color: #f4f4f4;
   border: solid 1px;
   color: brown;
+  margin-bottom: 3%;
 }

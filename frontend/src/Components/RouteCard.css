@@ -97,3 +97,48 @@
   font-size: 30px; /* Kích thước chữ */
   font-weight: 600;
 }
+.delete-confirm-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 20%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.delete-confirm-container p {
+  font-family: Montserrat;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: black;
+  font-weight: bold;
+  text-align: center;
+}
+
+.delete-confirm-buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+.cancel-button,
+.confirm-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: #c03103;
+  color: white;
+}
+
+.confirm-button {
+  background-color: #042d6c;
+  color: white;
+}

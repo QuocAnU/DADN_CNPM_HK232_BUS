@@ -40,6 +40,12 @@ export class BusStopsController {
     }
   }
 
+
+
+  @Get("/bus-route/:name")
+  async findByName(@Param('name') name: string) {
+    return await this.busStopService.findByName(name);
+  }
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateBusStopDto: UpdateBusStopDto) {
   //   return this.busStopService.update(+id, updateBusStopDto);

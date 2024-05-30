@@ -2,7 +2,7 @@
   font-size: 16px; /* 1rem = 16px, điều này có thể thay đổi cho toàn trang */
 }
 
-.header {
+.headerH {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -13,7 +13,7 @@
   padding: 1rem; /* 16px */
 }
 
-.left {
+.leftH {
   display: flex;
   align-items: center;
   width: 30%;
@@ -35,7 +35,7 @@
   text-align: left;
 }
 
-.right {
+.rightH {
   margin-right: 5%;
   display: flex;
   align-items: center;
@@ -48,36 +48,28 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .left {
+  .leftH {
     width: 50%;
   }
 
   #app-name {
     font-size: 1.5rem; /* 24px */
   }
-
-  .nav {
-    padding: 0.5rem 1rem; /* 8px 16px */
-  }
 }
 
 @media (max-width: 480px) {
-  .left {
+  .leftH {
     width: 100%;
     justify-content: center;
     margin-bottom: 0.625rem; /* 10px */
   }
 
-  .right {
+  .rightH {
     width: 100%;
     justify-content: center;
   }
 
   #app-name {
     font-size: 1.25rem; /* 20px */
-  }
-
-  .nav {
-    padding: 0.375rem 0.75rem; /* 6px 12px */
   }
 }

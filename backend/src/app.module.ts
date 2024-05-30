@@ -1,3 +1,4 @@
+import { AdafruitModule } from './device/device.module';
 import { Module } from '@nestjs/common';
 
 import { MongooseModule } from '@nestjs/mongoose'
@@ -9,7 +10,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AdminBusRoutesModule } from './bus-routes/admin-bus-routes.module';
 import { OsmModule } from './osm/osm.module';
 import { MailModule } from './mail/mail.module';
-import { DeviceModule } from './device/device.module';
 
 
 @Module({
@@ -24,7 +24,7 @@ import { DeviceModule } from './device/device.module';
     AuthModule,
     OsmModule,
     // MailModule,
-    DeviceModule,
+    AdafruitModule,
 
   ],
   controllers: [],
