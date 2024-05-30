@@ -1,10 +1,13 @@
+// List.js
 import React, { Component } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import './MapComponent.css';
+import BusStopComponent from './BusStopComponent';
+import { getRouteDetails } from './utils'; // Import the common function
 
-const GOONG_API_KEY = 'IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c';
+// const GOONG_API_KEY = 'IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c';
 
 class List extends Component {
     constructor(props) {
@@ -16,22 +19,19 @@ class List extends Component {
             startLocation: null,
             endLocation: null,
             error: null,
-            showOverlay: false
+            showOverlay: false,
+            selectedRouteStops: null,
+            selectedItem: null,
         };
-        this.getItemClicked = this.getItemClicked.bind(this);
-        this.closeStopsList = this.closeStopsList.bind(this);
     }
-    closeStopsList() {
-        this.setState({ showOverlay: false });
-    }
+
     componentDidMount() {
         axios.get('http://localhost:3001/bus-routes/all')
             .then((response) => {
                 this.setState({
                     data: response.data,
-                    results: response.data // Khởi tạo kết quả tìm kiếm với tất cả dữ liệu
+                    results: response.data // Initialize search results with all data
                 });
-                console.log("Data: ", response.data);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
@@ -65,52 +65,20 @@ class List extends Component {
     };
 
     getItemClicked = async (item) => {
-        const url = `https://rsapi.goong.io/Geocode?address=${encodeURIComponent(item.end_address)}&api_key=${GOONG_API_KEY}`;
-        const url1 = `https://rsapi.goong.io/Geocode?address=${encodeURIComponent(item.start_address)}&api_key=${GOONG_API_KEY}`;
-
+        this.setState({ selectedItem: item });
         try {
-            const response = await fetch(url);
-            const data = await response.json();
-
-            const response1 = await fetch(url1);
-            const data1 = await response1.json();
-            if (data.results && data.results.length > 0) {
-                const location = data.results[0].geometry.location;
-                this.setState({ endLocation: location });
-            } else {
-                this.setState({ error: 'Geocoding failed: No results found', endLocation: null });
-            }
-
-            if (data1.results && data1.results.length > 0) {
-                const location1 = data1.results[0].geometry.location;
-                this.setState({ startLocation: location1 });
-            } else {
-                this.setState({ error: 'Geocoding failed: No results found', startLocation: null });
-            }
-             // Fetch bus stops for the selected route
-
-             const busStopsResponse = await axios.get(`http://localhost:3001/bus-stop/all`);
-             var filteredBusStops; 
-             console.log(item.route_no);
-             if (item.route_no){
-                 filteredBusStops = busStopsResponse.data.filter(item1 => item1.route_no === item.route_no);
-            }
-            else {
-                filteredBusStops = busStopsResponse.data;
-            }
-            this.setState({ selectedRouteStops: filteredBusStops, showOverlay: true  });
-            console.log("Filtered bus stops: ", filteredBusStops);
-            // Thêm trường busStops vào state
-            this.setState({ busStops: filteredBusStops }); // array of bus stops
-            this.props.updateBusStops(filteredBusStops); // Pass bus stops to MapComponent
+            const { startLocation, endLocation, busStops } = await getRouteDetails(item);
+            this.setState({ startLocation, endLocation, selectedRouteStops: busStops, showOverlay: true });
+            this.props.updateRoute(startLocation, endLocation);
+            this.props.updateBusStops(busStops);
         } catch (error) {
-            this.setState({ error: 'Error: ' + error.message, endLocation: null });
+            this.setState({ error: 'Error: ' + error.message });
         }
-        
     };
-    
 
     render() {
+        const { showOverlay, selectedRouteStops, selectedItem, results, searchTerm } = this.state;
+
         return (
             <div className="list">
                 <h3 className="title">Tra cứu</h3>
@@ -121,38 +89,29 @@ class List extends Component {
                         className="search"
                         type="number"
                         placeholder="Nhập số xe cần tìm"
+                        value={searchTerm}
                         onChange={this.handleSearchChange}
                     />
                 </div>
                 <div className="list-item">
-                    {
-                        this.state.results.length ? this.state.results.map(item => (
-                            <div key={item.id}>
-                                <div className="item" onClick={() => this.getItemClicked(item)}>
-                                    <p>Tuyến xe buýt số {item.route_no || "NULL"}</p>
-                                    <p>{item.schedule || "NULL"}</p>
-                                    <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '5%' }}>{item.operation_time}</p>
-                                    <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '20%' }}>{item.ticket}</p>
-                                </div>
+                    {results.length ? results.map(item => (
+                        <div key={item.id}>
+                            <div className="item" onClick={() => this.getItemClicked(item)}>
+                                <p>Tuyến xe buýt số {item.route_no || "NULL"}</p>
+                                <p>{item.schedule || "NULL"}</p>
+                                <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '5%' }}>{item.operation_time}</p>
+                                <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '20%' }}>{item.ticket}</p>
                             </div>
-                        ))
-                            :
-                            <p>Không tồn tại tuyến xe</p>
-                    }
-                </div>
-                {/* Hiển thị danh sách trạm dừng nếu có tuyến xe buýt được chọn */}
-                {this.state.showOverlay && this.state.selectedRouteStops && (
-                    <div className="stop-list-overlay">
-                        <div className="stop-list">
-                            <button className="close-button" onClick={this.closeStopsList}>Đóng</button>
-                            <h3>Các trạm dừng:</h3>
-                            <ul>
-                                {this.state.selectedRouteStops.map(stop => (
-                                    <li key={stop.id}>{stop.name}</li>
-                                ))}
-                            </ul>
                         </div>
-                    </div>
+                    )) : <p>Không tồn tại tuyến xe</p>}
+                </div>
+                {showOverlay && (
+                    <BusStopComponent 
+                        busStops={selectedRouteStops}
+                        selectedRoute={selectedItem}
+                        onClose={() => this.setState({ showOverlay: false })}
+                        
+                    />
                 )}
             </div>
         );

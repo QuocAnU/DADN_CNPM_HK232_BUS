@@ -57,7 +57,7 @@
   background-color: white;
   height: 1000px;
   width: 20%;
-  max-height: 700px; /* Ví dụ: giới hạn chiều cao của div là 700px */
+  max-height: 680px; /* Ví dụ: giới hạn chiều cao của div là 680px */
   overflow-y: auto;
 }
 .title {
@@ -129,36 +129,13 @@ justify-content: center;
 z-index: 1000;
 }
 
-.stop-list-overlay {
-  position: fixed;
-  top: 9.75%;
-  left: 0;
+.header_1 {
   width: 100%;
-  z-index: 1500; /* Đảm bảo overlay nằm trên cùng */
-  height: 1000px;
-  width: 20%;
-  max-height: 700px; /* Ví dụ: giới hạn chiều cao của div là 700px */
-  overflow-y: auto;
-  background-color: white;
-}
-
-.stop-list {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  position: relative;
-}
-
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.close-button:hover {
-  color: red;
+  height: 5%;
+  display: flex;
+  align-items: center;
+  
+  padding: 1rem 0;
+  background-color: #277BFC;
+  color: white;
 }
