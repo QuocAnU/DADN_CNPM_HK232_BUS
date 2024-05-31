@@ -17,7 +17,7 @@ export class BusStop {
     longitute: number;
     
     @Prop({ required: true })
-    route_no : number;
+    route_no : string;
 
     @Prop({ required: true })
     createdAt: Date;
