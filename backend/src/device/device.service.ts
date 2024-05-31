@@ -13,6 +13,9 @@ export class AdafruitService {
       acc[this.feeds[index]] = parseFloat(value);
       return acc;
     }, {});
+
+    data.route_no = "50"
+    data.number_plate = "51B1-00172"
     return JSON.stringify(data, null, 2);
   }
 
@@ -26,6 +29,7 @@ export class AdafruitService {
       json: true,
     };
     const response = await request.get(url, options);
+
     return response.value; // Return only the 'value' field
   }
 }
