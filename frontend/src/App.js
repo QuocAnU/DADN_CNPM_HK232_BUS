@@ -10,7 +10,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomePage/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/quanlytt" element={<QuanLyTT />} />
         <Route path="/forgetpass" element={<ForgetPass />} />
@@ -20,5 +20,3 @@ export default function App() {
     </Router>
   );
 }
-
-export default App;

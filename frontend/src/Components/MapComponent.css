@@ -1,5 +1,4 @@
 /* component Header */
-/* component Header */
 .header {
   width: 100%;
   height: 5%;
@@ -58,7 +57,7 @@
   background-color: white;
   height: 1000px;
   width: 20%;
-  max-height: 680px; /* Ví dụ: giới hạn chiều cao của div là 680px */
+  max-height: 643px; /* Ví dụ: giới hạn chiều cao của div là 643px */
   overflow-y: auto;
 }
 .title {

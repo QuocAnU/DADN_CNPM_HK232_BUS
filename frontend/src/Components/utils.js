@@ -5,6 +5,8 @@ const GOONG_API_KEY = 'IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c';
 
 export const getRouteDetails = async (item) => {
 
+    // nhận vào đối tượng kiểu route
+    console.log("item: ",item);
     const url = `https://rsapi.goong.io/Geocode?address=${encodeURIComponent(item.end_address)}&api_key=${GOONG_API_KEY}`;
     const url1 = `https://rsapi.goong.io/Geocode?address=${encodeURIComponent(item.start_address)}&api_key=${GOONG_API_KEY}`;
 
@@ -15,12 +17,15 @@ export const getRouteDetails = async (item) => {
         const data1 = await response1.json();
         const endLocation = data.results[0]?.geometry.location || null;
         const startLocation = data1.results[0]?.geometry.location || null;
-
+        
+        
+        
         const busStopsResponse = await axios.get(`http://localhost:3001/bus-stop/all`);
+        // busStopsResponse.data.map(item1 => console.log("item1.route_no: ", typeof(item1.route_no.toString())));
         const filteredBusStops = item.route_no
             ? busStopsResponse.data.filter(item1 => item1.route_no === item.route_no)
             : busStopsResponse.data;
-
+        // console.log(filteredBusStops)
         return {
             startLocation,
             endLocation,

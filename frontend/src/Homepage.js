@@ -20,7 +20,7 @@ class HomePage extends React.Component {
     };
     render() {
         return (
-            <div className="App">
+            <div className="HomePage">
                 <Header />
                 <div className="main-content">
                     <List updateRoute={this.updateRoute} />

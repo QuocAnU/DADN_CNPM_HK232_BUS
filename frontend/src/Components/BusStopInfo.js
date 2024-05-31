@@ -2,34 +2,67 @@ import React, { Component } from 'react';
 import './BusStopInfo.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-
+import axios from 'axios';
 class BusStopInfo extends Component {
+    state = {
+        activeTab1: 'route',
+        // selectedBusStop: null,
+        // busRoutes: [],
+        // page: 1,
+        // perPage: 10,
+    };
+    
+
+    handleTabClick = async (tab) => {
+        this.setState({ activeTab1: tab });
+        if (tab === 'bus') {
+            console.log('bus');
+            this.props.fetchBusData();
+        }
+    };
+
     render() {
-        const { busStop, onClose, onRouteClick } = this.props;
-
-       
-
+        const { busStop, onClose, onRouteClick, busRoutes, fetchBusData} = this.props;
+        console.log(busRoutes);
+        const { activeTab1 } = this.state;
+        // console.log("Bus stop clicked: ",busStop, busRoutes);
         return (
             <div className="bus-stop-info">
                 <header className="header_1">
                     <FontAwesomeIcon icon={faArrowLeft} className="back-icon" onClick={onClose} />
                     <h2 style={{ marginLeft: "10px" }}>{busStop.name}</h2>
+
                 </header>
+                <div className="tabs">
+                    <button className={activeTab1 === 'route' ? 'active' : ''} onClick={() => this.handleTabClick('route')}>Tuyến đi qua</button>
+                    <button className={activeTab1 === 'bus' ? 'active' : ''} onClick={() => this.handleTabClick('bus')}>Danh sách xe</button>
+                </div>
                 <div className="">
-                    <p>Tuyến xe đi qua: {busStop.route_no || "NULL"}</p>
-                    <button onClick={() => onRouteClick(busStop)}>Hiển thị tuyến</button> {/* Ensure this button uses onRouteClick */}
+                <p>Routes: {busStop.routes ? busStop.routes.join(', ') : busStop.route_no}</p>
+                {busStop.routes && busStop.routes.map(route => (
+                    <button key={route} onClick={() => onRouteClick(route)}>
+                        Show Route {route}
+                    </button>
+                ))}
+                    {/* <p>Tuyến xe đi qua: </p>
+                    <ul>
+                        {busRoutes.map(route => (
+                            <li key={route}>
+                                {route.route_no} - {route.name}
+                                <button onClick={() => onRouteClick(route)}>Hiển thị tuyến</button>
+                            </li>
+                        ))}
+                    </ul> */}
                 </div>
             </div>
         );
     }
 }
 
-
-
 class BusStopList extends Component {
     render() {
-        const { busStops, onBusStopClick } = this.props;
-
+        const { busStops, onBusStopClick, totalPages, currentPage, onPageChange } = this.props;
+        // console.log("Function is passed: ",onBusStopClick)
         return (
             <div className="stop-list-overlay">
                 <div className="stop-list">
@@ -38,7 +71,7 @@ class BusStopList extends Component {
                         {busStops.length ? busStops.map(stop => (
                             <li key={stop.id}>
                                 <span>{stop.name}</span>
-                                <button 
+                                <button
                                     onClick={() => onBusStopClick(stop)}
                                     className="detail-button">
                                     Chi tiết
@@ -46,11 +79,23 @@ class BusStopList extends Component {
                             </li>
                         )) : <p>Không có trạm dừng nào</p>}
                     </ul>
+                    {/* <div className="pagination">
+                        {Array.from({ length: totalPages }, (_, i) => (
+                            <button
+                                key={i + 1}
+                                className={`page-button ${currentPage === i + 1 ? 'active' : ''}`}
+                                onClick={() => onPageChange(i + 1)}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+                    </div> */}
                 </div>
             </div>
         );
     }
 }
+
 function reverseStations(stations) {
     // Tách chuỗi đầu vào thành một mảng các ga
     let stationArray = stations.split('-');
@@ -63,12 +108,13 @@ function reverseStations(stations) {
 
     return reversedStations;
 }
+
 class BusRouteInfo extends Component {
     render(){
         const { selectedRoute } = this.props;
         var schedule = reverseStations(selectedRoute.schedule);
 
-        // console.log(selectedRoute);
+        console.log("selectedRoute: ",selectedRoute);
         return (
             <div className='route-info'>
                 <p>Chi tiết tuyến xe</p>
@@ -84,6 +130,6 @@ class BusRouteInfo extends Component {
         )
     }
 }
-export { BusRouteInfo }
-export { BusStopList };
+
+export { BusRouteInfo, BusStopList };
 export default BusStopInfo;

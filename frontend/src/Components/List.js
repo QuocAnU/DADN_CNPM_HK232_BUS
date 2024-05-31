@@ -64,11 +64,17 @@ class List extends Component {
         this.setState({ searchTerm: e.target.value });
     };
 
-    getItemClicked = async (item) => {
-        this.setState({ selectedItem: item });
+    getItemClicked = async (route) => {
+        // Sử dụng lại logic từ hàm cũ
         try {
-            const { startLocation, endLocation, busStops } = await getRouteDetails(item);
-            this.setState({ startLocation, endLocation, selectedRouteStops: busStops, showOverlay: true });
+            const { startLocation, endLocation, busStops } = await getRouteDetails(route);
+            this.setState({
+                startLocation,
+                endLocation,
+                selectedRouteStops: busStops,
+                selectedItem: route,
+                showOverlay: true
+            });
             this.props.updateRoute(startLocation, endLocation);
             this.props.updateBusStops(busStops);
         } catch (error) {
@@ -78,7 +84,8 @@ class List extends Component {
 
     render() {
         const { showOverlay, selectedRouteStops, selectedItem, results, searchTerm } = this.state;
-
+        const {handleRouteSelect, fetchBusData, onClose} = this.props;
+        
         return (
             <div className="list">
                 <h3 className="title">Tra cứu</h3>
@@ -109,7 +116,12 @@ class List extends Component {
                     <BusStopComponent 
                         busStops={selectedRouteStops}
                         selectedRoute={selectedItem}
-                        onClose={() => this.setState({ showOverlay: false })}
+                        onClose={() => {
+                        this.setState({ busData: null })
+                        this.setState({ showOverlay: false })
+                        }}
+                        handleRouteSelect = {handleRouteSelect}
+                        fetchBusData = {fetchBusData}
                         
                     />
                 )}
