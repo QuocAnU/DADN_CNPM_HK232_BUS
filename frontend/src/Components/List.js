@@ -91,7 +91,7 @@ class List extends Component {
 
     render() {
         const { showOverlay, selectedRouteStops, selectedItem, results, searchTerm } = this.state;
-        const {handleRouteSelect, fetchBusData, onClose, backToList} = this.props;
+        const {handleRouteSelect, fetchBusData,  backToList, stopFetchBusLocations} = this.props;
         
         return (
             <div className="list">
@@ -121,14 +121,16 @@ class List extends Component {
                 </div>
                 {showOverlay && (
                     <BusStopComponent 
+                        
                         busStops={selectedRouteStops}
                         selectedRoute={selectedItem}
                         onClose={() => {
-                        this.setState({ busData: null })
-                        backToList();
-                        handleRouteSelect(null)
+                            this.setState({ busData: null })
+                            backToList();
+                            handleRouteSelect(null)
 
                         }}
+                        stopFetchBusLocations = {stopFetchBusLocations}
                         handleRouteSelect = {handleRouteSelect}
                         fetchBusData = {fetchBusData}
                         

@@ -4,20 +4,33 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
+
 class BusStopInfo extends Component {
     state = {
         activeTab1: 'route',
+        busData: null,
     };
-
+    fetchBusData= async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/adafruit/feed');
+            
+            this.setState({busData: response.data});
+        } catch (error) {
+            console.error('Error fetching bus locations:', error);
+            return null;
+        }
+    };
     handleTabClick = async (tab) => {
         this.setState({ activeTab1: tab });
         if (tab === 'bus') {
-            this.props.fetchBusData();
+            this.fetchBusData();
         }
     };
 
     render() {
-        const { busStop, onClose, onRouteClick, busRoutes } = this.props;
+        const { busStop, onClose, onRouteClick} = this.props;
+        const { busData } =this.state;
+        if (busData) console.log(busData, this.state.activeTab1);
         const { activeTab1 } = this.state;
         return (
             <div className="bus-stop-info">
@@ -30,12 +43,24 @@ class BusStopInfo extends Component {
                     <button className={activeTab1 === 'bus' ? 'active' : ''} onClick={() => this.handleTabClick('bus')}>Danh sách xe</button>
                 </div>
                 <div>
-                    <p>Routes: {busStop.routes ? busStop.routes.join(', ') : busStop.route_no}</p>
-                    {busStop.routes && busStop.routes.map(route => (
-                        <button key={route} onClick={() => onRouteClick(route)}>
+                    {this.state.activeTab1 === "route" ? <p>Routes: {busStop.routes ? busStop.routes.join(', ') : busStop.route_no}</p> : null}
+                    {this.state.activeTab1 === "route" ? (busStop.routes && busStop.routes.map(route => (
+                        <button key={route} onClick={() => {
+                            onClose()
+                            onRouteClick(route)}}>
                             Show Route {route}
                         </button>
-                    ))}
+                    ))) : null}
+                    {this.state.activeTab1 === "bus" ? 
+                     
+                        busData &&
+                    <div>
+                        <p>Tuyến xe số: {busData.route_no}</p>
+                        <p>Biển số: {busData.number_plate}</p>
+                    </div>
+                    
+                    : null
+                    }
                 </div>
             </div>
         );

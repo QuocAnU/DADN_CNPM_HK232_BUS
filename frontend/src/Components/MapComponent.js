@@ -150,7 +150,7 @@ class MapComponent extends Component {
             ...busStop,
             location: { lat: busStop.latitude, lng: busStop.longitude }
         }));
-            console.log("busStopsWithCoords: ",busStopsWithCoords);
+            // console.log("busStopsWithCoords: ",busStopsWithCoords);
             this.setState({ busStopsWithCoords });
         } catch (error) {
             console.error('Error fetching bus stops:', error);
@@ -276,12 +276,14 @@ class MapComponent extends Component {
             console.error('Error fetching bus locations:', error);
         }
     };
+    stopFetchBusLocations = async () => {
+        this.setState({ busData: null });
+    }
     mapRef = React.createRef();
 
     render() {
          
-        const { selectedBusStop , busStopsWithCoords, routeCoordinates, viewport, busData, location } = this.state;
-        console.log(location);
+        const { selectedBusStop , busStopsWithCoords, routeCoordinates, viewport, busData } = this.state;
         // if (selectedBusStop) {this.handleBusStopClick(selectedBusStop);}
         const routeLayer = {
             id: 'route',
@@ -309,7 +311,9 @@ class MapComponent extends Component {
                     updateBusStops={this.updateBusStops} 
                     handleRouteSelect={this.handleRouteClick}
                     fetchBusData={this.fetchBusLocations}
+                    stopFetchBusLocations = {this.stopFetchBusLocations}
                     backToList={this.backToList}
+                    
                 />
                 <ReactMapGL
                     ref={this.mapRef}
@@ -349,20 +353,20 @@ class MapComponent extends Component {
                             </Marker>
                         )
                     ))}
-                    {selectedBusStop && (
+                    {selectedBusStop ? (
                         <BusStopInfo
                             busStop={selectedBusStop}
                             onClose={() => this.setState({ selectedBusStop: null, busData: null })}
                             onRouteClick={
                                 this.handleRouteClick
                             } 
-                            
+                            busData = {busData}
                             // handleTabClick={this.handleTabClick}
                             busRoutes={this.state.busRoutes}
                             fetchBusData={this.fetchBusLocations}
                             // Pass the function here
                         />
-                    )}
+                    ) : null}
                     {busData && 
                         <Marker key={busData.latitude} latitude={busData.latitude} longitude={busData.longitude}>
                             <div style={{ background: 'blue', borderRadius: '50%', width: '10px', height: '10px' }}>

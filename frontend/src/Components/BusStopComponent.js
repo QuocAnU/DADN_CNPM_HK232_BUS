@@ -13,12 +13,21 @@ class BusStopComponent extends Component {
         busRoutes: [],
         page: 1,
         perPage: 10,
+        busData: null,
     };
-
+    fetchBusLocations = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/adafruit/feed');
+            console.log(response.data);
+            this.setState({ busData: response.data });
+        } catch (error) {
+            console.error('Error fetching bus locations:', error);
+        }
+    };
     handleTabClick = (tab) => {
         this.setState({ activeTab: tab });
     }
-
+    
     handleBusStopClick = async (busStop) => {
         this.setState({ selectedBusStop: busStop, activeTab: 'busStop-info' });
         try {
@@ -42,12 +51,11 @@ class BusStopComponent extends Component {
         // Sử dụng lại hàm getItemClicked để lấy thông tin chi tiết tuyến
         // get bus stop by name
         const response_busStops = await axios.get(`http://localhost:3001/bus-stop/bus-route/${route.name}`);
-        
         // get route by route_no
         const route_clicked = response_busStops.data.filter(route_cl => route_cl.route_no === route.route_no);
         const response_route = await axios.get(`http://localhost:3001/bus-routes/${route_clicked[0].route_no}`);
         await this.props.onRouteClick(response_route);
-        this.setState({ selectedBusStop: null, activeTab: 'stops' });
+        this.handleCloseBusStopInfo();
     };
     // handleRouteClick = async (route) => {
     //     this.setState({ selectedBusStop: null, activeTab: 'stops', selectedRoute: route });
@@ -86,8 +94,7 @@ class BusStopComponent extends Component {
     // };
     render() {
         const { activeTab, selectedBusStop,  page, perPage } = this.state;
-       
-        const { busStops, selectedRoute, onClose, handleRouteSelect, fetchBusData } = this.props;
+        const { busStops, selectedRoute, onClose, handleRouteSelect, fetchBusData, stopFetchBusLocations} = this.props;
         const indexOfLastBusStop = page * perPage;
         const indexOfFirstBusStop = indexOfLastBusStop - perPage;
         const currentBusStops = busStops.slice(indexOfFirstBusStop, indexOfLastBusStop);
@@ -114,15 +121,24 @@ class BusStopComponent extends Component {
                     />
                 )}
                 {activeTab === 'details' && <BusRouteInfo selectedRoute={selectedRoute} />}
-                {activeTab === 'busStop-info' && selectedBusStop && (
+                {activeTab === 'busStop-info' && (selectedBusStop ? (
                     <BusStopInfo
+                        
                         busStop={selectedBusStop}
-                        onClose={onClose}
+                        onClose={
+                            () => {
+                                this.handleCloseBusStopInfo()
+                                this.setState({busData: null})
+                                stopFetchBusLocations();
+                            }
+                        }
                         onRouteClick={handleRouteSelect}
                         busRoutes={this.state.busRoutes}
                         fetchBusData={fetchBusData}
+                        
                     />
-                )}
+                ) : null)
+                }
             </div>
         );
     }
