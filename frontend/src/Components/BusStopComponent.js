@@ -22,6 +22,7 @@ class BusStopComponent extends Component {
     handleBusStopClick = async (busStop) => {
         this.setState({ selectedBusStop: busStop, activeTab: 'busStop-info' });
         try {
+            console.log(busStop.name)
             const response_busRoutes = await axios.get(`http://localhost:3001/bus-stop/bus-route/${busStop.name}`);
             
             const busRoutes = response_busRoutes.data;

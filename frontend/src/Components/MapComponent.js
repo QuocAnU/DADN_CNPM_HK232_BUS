@@ -63,7 +63,7 @@ class MapComponent extends Component {
             }
         );
         this.fetchAllBusStops();
-        this.busLocationInterval = setInterval(this.fetchBusLocations, 100);
+        this.busLocationInterval = setInterval(this.fetchBusLocations, 100000);
     }
 
     componentWillUnmount() {
@@ -89,7 +89,7 @@ class MapComponent extends Component {
     };
 
     getPlaceDetails = async (placeId) => {
-        try {
+        if (placeId) {
             const response = await axios.get(`https://rsapi.goong.io/Place/Detail?api_key=${GOONG_API_KEY}&place_id=${placeId}`);
             const location = response.data.result.geometry.location;
             if (location) {
@@ -104,20 +104,29 @@ class MapComponent extends Component {
                 });
             }
             return location;
-        } catch (error) {
-            console.error('Lỗi khi lấy thông tin chi tiết địa điểm:', error);
-            return null;
+        } else {
+            // this.setState({
+            //     location: null,
+            // });
         }
     };
 
     handleSuggestionSelect = async (suggestion) => {
-        const location = await this.getPlaceDetails(suggestion.place_id);
-        if (location && this.state.currentLocation) {
-            const routeCoords = await fetchDirections(
-                { lat: this.state.currentLocation.latitude, lng: this.state.currentLocation.longitude },
-                location
-            );
-            this.setState({ routeCoordinates: routeCoords });
+        if (suggestion) {
+            const location = await this.getPlaceDetails(suggestion.place_id);
+            if (location && this.state.currentLocation) {
+                const routeCoords = await fetchDirections(
+                    { lat: this.state.currentLocation.latitude, lng: this.state.currentLocation.longitude },
+                    location
+                );
+                this.setState({ routeCoordinates: routeCoords });
+            }
+        }
+        else {
+            this.setState({
+                location: null,
+            });
+            this.setState({ routeCoordinates: [] });
         }
     };
 
@@ -149,15 +158,17 @@ class MapComponent extends Component {
     };
 
     updateBusStops = (busStops) => {
+        console.log("busStops: ", busStops);
         const busStopsWithCoords = busStops.map((busStop) => ({
             ...busStop,
             location: { lat: busStop.latitude, lng: busStop.longitude }
         }));
+        console.log("busStopsWithCoords: ", busStopsWithCoords)
         this.setState({ busStopsWithCoords });
     };
 
     updateRoute = async (startLocation, endLocation) => {
-        const routeCoords = await fetchDirections(startLocation, endLocation);
+        const routeCoords = (startLocation && endLocation) ? await fetchDirections(startLocation, endLocation) : null;
         if (routeCoords) {
             this.setState({
                 routeCoordinates: routeCoords,
@@ -196,19 +207,65 @@ class MapComponent extends Component {
         }
     };
     handleBusStopClick = async (busStop) => {
-        this.setState({ selectedBusStop: busStop});
+        this.setState({ selectedBusStop: busStop, activeTab: 'busStop-info' });
         try {
-            const response_busRoutes = await axios.get(`http://localhost:3001/bus-stop/bus-route/${busStop.name}`);            
-            this.setState({ busRoutes: response_busRoutes.data });
-            console.log("busRoutes: ", response_busRoutes.data);
+            console.log(busStop.name)
+            const response_busRoutes = await axios.get(`http://localhost:3001/bus-stop/bus-route/${busStop.name}`);
+            
+            const busRoutes = response_busRoutes.data;
+            console.log("busRoutes: ", busRoutes.map(route => route.route_no));
+            const busStopWithRoutes = { ...busStop, routes: busRoutes.map(route => route.route_no) };
+            this.setState({ selectedBusStop: busStopWithRoutes });
+            this.setState({ busRoutes: busRoutes });
         } catch (error) {
             console.error('Error fetching bus routes:', error);
         }
     }
+    handleBusRouteClick = async (route) => {
+        if (route) {
+            const { startLocation, endLocation, busStops } = await getRouteDetails(route);
+            const routeCoordinates = await fetchDirections(startLocation, endLocation);
+            this.setState({
+                startLocation,
+                endLocation,
+                busStopsWithCoords: busStops.map((busStop) => ({
+                    ...busStop,
+                    location: { lat: busStop.latitude, lng: busStop.longitude }
+                })),
+                routeCoordinates,
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: startLocation.lat,
+                    longitude: startLocation.lng,
+                    zoom: 14
+                }
+            });
+        } else {
+            // console.error('Error handling bus route click:', error);
+        }
+    };
+    // handleBusStopClick = async (busStop) => {
+    //     this.setState({ selectedBusStop: busStop});
+    //     try {
+    //         const response_busRoutes = await axios.get(`http://localhost:3001/bus-stop/bus-route/${busStop.name}`);            
+    //         this.setState({ busRoutes: response_busRoutes.data });
+    //         console.log("busRoutes: ", response_busRoutes.data);
+    //     } catch (error) {
+    //         console.error('Error fetching bus routes:', error);
+    //     }
+    // }
 
     handleRouteClick = async (route) => {
-        await this.renderRoute(route);
+        console.log(route);
+        const routeData = await axios.get(`http://localhost:3001/bus-routes/${route}`);
+        console.log(routeData);
+        this.listRef.getItemClicked(routeData.data);
     };
+    backToList = async () => {
+        this.listRef.getItemClicked(null);
+        this.setState({ routeCoordinates: [] });
+        this.fetchAllBusStops();
+    }
     // get bus location
     fetchBusLocations = async () => {
         try {
@@ -223,7 +280,8 @@ class MapComponent extends Component {
 
     render() {
          
-        const { selectedBusStop , busStopsWithCoords, routeCoordinates, viewport, busData } = this.state;
+        const { selectedBusStop , busStopsWithCoords, routeCoordinates, viewport, busData, location } = this.state;
+        console.log(location);
         // if (selectedBusStop) {this.handleBusStopClick(selectedBusStop);}
         const routeLayer = {
             id: 'route',
@@ -242,11 +300,16 @@ class MapComponent extends Component {
             <div style={{ position: 'relative', width: '100%' }}>
                 <AddressSearch onSuggestionSelect={this.handleSuggestionSelect} />
                 <List 
+                    items={busStopsWithCoords.map((busStop) => ({
+                                    ...busStop,
+                                    onClick: () => this.handleBusStopClick(busStop)
+                                }))}
+                    ref={(ref) => { this.listRef = ref; }} 
                     updateRoute={this.updateRoute} 
                     updateBusStops={this.updateBusStops} 
                     handleRouteSelect={this.handleRouteClick}
                     fetchBusData={this.fetchBusLocations}
-                    
+                    backToList={this.backToList}
                 />
                 <ReactMapGL
                     ref={this.mapRef}
@@ -262,11 +325,12 @@ class MapComponent extends Component {
                             <div style={{ background: 'red', borderRadius: '50%', width: '10px', height: '10px' }}></div>
                         </Marker>
                     )}
-                    {this.state.location && (
+                    {this.state.location ? (
                         <Marker latitude={this.state.location.lat} longitude={this.state.location.lng}>
                             <img src={locationImage} alt="location" style={{ height: '40px', width: '40px' }} />
                         </Marker>
-                    )}
+                        
+                    ) : null}
                     <Source id="route" type="geojson" data={{
                         type: 'Feature',
                         properties: {},
@@ -277,7 +341,8 @@ class MapComponent extends Component {
                     }}>
                         <Layer {...routeLayer} />
                     </Source>
-                    {   this.state.viewport.zoom > 12 && this.state.viewport.zoom < 17 && busStopsWithCoords.map(busStop => (
+                    {   this.state.viewport.zoom > 12 && this.state.viewport.zoom < 17 && 
+                    busStopsWithCoords.map(busStop => (
                         busStop.location && busStop.location.lat && busStop.location.lng && (
                             <Marker key={busStop._id} latitude={busStop.location.lat} longitude={busStop.location.lng}  onClick={() => this.handleBusStopClick(busStop)}>
                                 <img src={bus} alt="bus stop" style={{ height: '20px', width: '20px' }} />

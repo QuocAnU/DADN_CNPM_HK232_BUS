@@ -66,7 +66,7 @@ class List extends Component {
 
     getItemClicked = async (route) => {
         // Sử dụng lại logic từ hàm cũ
-        try {
+        if (route) {
             const { startLocation, endLocation, busStops } = await getRouteDetails(route);
             this.setState({
                 startLocation,
@@ -77,14 +77,21 @@ class List extends Component {
             });
             this.props.updateRoute(startLocation, endLocation);
             this.props.updateBusStops(busStops);
-        } catch (error) {
-            this.setState({ error: 'Error: ' + error.message });
+        } 
+        else {
+            this.setState({
+                startLocation: null,
+                endLocation: null,
+                selectedRouteStops: null,
+                selectedItem: null,
+                showOverlay: false
+            });
         }
     };
 
     render() {
         const { showOverlay, selectedRouteStops, selectedItem, results, searchTerm } = this.state;
-        const {handleRouteSelect, fetchBusData, onClose} = this.props;
+        const {handleRouteSelect, fetchBusData, onClose, backToList} = this.props;
         
         return (
             <div className="list">
@@ -118,7 +125,9 @@ class List extends Component {
                         selectedRoute={selectedItem}
                         onClose={() => {
                         this.setState({ busData: null })
-                        this.setState({ showOverlay: false })
+                        backToList();
+                        handleRouteSelect(null)
+
                         }}
                         handleRouteSelect = {handleRouteSelect}
                         fetchBusData = {fetchBusData}

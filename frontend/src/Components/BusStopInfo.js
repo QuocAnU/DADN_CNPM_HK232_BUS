@@ -3,56 +3,39 @@ import './BusStopInfo.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+
 class BusStopInfo extends Component {
     state = {
         activeTab1: 'route',
-        // selectedBusStop: null,
-        // busRoutes: [],
-        // page: 1,
-        // perPage: 10,
     };
-    
 
     handleTabClick = async (tab) => {
         this.setState({ activeTab1: tab });
         if (tab === 'bus') {
-            console.log('bus');
             this.props.fetchBusData();
         }
     };
 
     render() {
-        const { busStop, onClose, onRouteClick, busRoutes, fetchBusData} = this.props;
-        console.log(busRoutes);
+        const { busStop, onClose, onRouteClick, busRoutes } = this.props;
         const { activeTab1 } = this.state;
-        // console.log("Bus stop clicked: ",busStop, busRoutes);
         return (
             <div className="bus-stop-info">
                 <header className="header_1">
                     <FontAwesomeIcon icon={faArrowLeft} className="back-icon" onClick={onClose} />
                     <h2 style={{ marginLeft: "10px" }}>{busStop.name}</h2>
-
                 </header>
                 <div className="tabs">
                     <button className={activeTab1 === 'route' ? 'active' : ''} onClick={() => this.handleTabClick('route')}>Tuyến đi qua</button>
                     <button className={activeTab1 === 'bus' ? 'active' : ''} onClick={() => this.handleTabClick('bus')}>Danh sách xe</button>
                 </div>
-                <div className="">
-                <p>Routes: {busStop.routes ? busStop.routes.join(', ') : busStop.route_no}</p>
-                {busStop.routes && busStop.routes.map(route => (
-                    <button key={route} onClick={() => onRouteClick(route)}>
-                        Show Route {route}
-                    </button>
-                ))}
-                    {/* <p>Tuyến xe đi qua: </p>
-                    <ul>
-                        {busRoutes.map(route => (
-                            <li key={route}>
-                                {route.route_no} - {route.name}
-                                <button onClick={() => onRouteClick(route)}>Hiển thị tuyến</button>
-                            </li>
-                        ))}
-                    </ul> */}
+                <div>
+                    <p>Routes: {busStop.routes ? busStop.routes.join(', ') : busStop.route_no}</p>
+                    {busStop.routes && busStop.routes.map(route => (
+                        <button key={route} onClick={() => onRouteClick(route)}>
+                            Show Route {route}
+                        </button>
+                    ))}
                 </div>
             </div>
         );
