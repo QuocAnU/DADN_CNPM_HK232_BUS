@@ -9,7 +9,7 @@ export class BaseBusStopDto {
     latitude: number;
 
     @ApiProperty()
-    longitute: number;
+    longitude: number;
     
     @ApiProperty()
     route_no: string;
