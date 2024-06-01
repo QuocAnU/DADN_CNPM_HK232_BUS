@@ -256,9 +256,9 @@ class MapComponent extends Component {
     // }
 
     handleRouteClick = async (route) => {
-        console.log(route);
+        // console.log(route);
         const routeData = await axios.get(`http://localhost:3001/bus-routes/${route}`);
-        console.log(routeData);
+        // console.log(routeData);
         this.listRef.getItemClicked(routeData.data);
     };
     backToList = async () => {
@@ -284,6 +284,7 @@ class MapComponent extends Component {
     render() {
          
         const { selectedBusStop , busStopsWithCoords, routeCoordinates, viewport, busData } = this.state;
+        console.log(busData)
         // if (selectedBusStop) {this.handleBusStopClick(selectedBusStop);}
         const routeLayer = {
             id: 'route',

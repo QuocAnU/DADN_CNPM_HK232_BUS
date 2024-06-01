@@ -13,7 +13,7 @@ class BusStopInfo extends Component {
     fetchBusData= async () => {
         try {
             const response = await axios.get('http://localhost:3001/adafruit/feed');
-            
+            console.log("one more time")
             this.setState({busData: response.data});
         } catch (error) {
             console.error('Error fetching bus locations:', error);
@@ -23,7 +23,9 @@ class BusStopInfo extends Component {
     handleTabClick = async (tab) => {
         this.setState({ activeTab1: tab });
         if (tab === 'bus') {
-            this.fetchBusData();
+            this.props.fetchBusData();
+            this.busLocationInterval = setInterval(this.fetchBusData, 1000);
+            // this.busLocationInterval = setInterval(this.fetchBusData, 1000);
         }
     };
 
