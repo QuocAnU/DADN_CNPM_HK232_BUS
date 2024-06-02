@@ -1,155 +1,144 @@
-import React, { Component } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import "./MapComponent.css";
+// List.js
+import React, { Component } from 'react';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import './MapComponent.css';
+import BusStopComponent from './BusStopComponent';
+import { getRouteDetails } from './utils'; // Import the common function
 
-const GOONG_API_KEY = "IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c";
+// const GOONG_API_KEY = 'IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c';
 
 class List extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchTerm: "",
-      results: [],
-      data: [],
-      startLocation: null,
-      endLocation: null,
-      error: null,
+    constructor(props) {
+        super(props);
+        this.state = {
+            searchTerm: '',
+            results: [],
+            data: [],
+            startLocation: null,
+            endLocation: null,
+            error: null,
+            showOverlay: false,
+            selectedRouteStops: null,
+            selectedItem: null,
+        };
+    }
+
+    componentDidMount() {
+        axios.get('http://localhost:3001/bus-routes/all')
+            .then((response) => {
+                this.setState({
+                    data: response.data,
+                    results: response.data // Initialize search results with all data
+                });
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.searchTerm !== this.state.searchTerm) {
+            this.updateResults();
+        }
+        if (prevState.startLocation !== this.state.startLocation || prevState.endLocation !== this.state.endLocation) {
+            this.updateRoute();
+        }
+    }
+
+    updateResults = () => {
+        const filteredData = this.state.data.filter(item =>
+            item.route_no.toString().includes(this.state.searchTerm)
+        );
+        this.setState({ results: filteredData });
     };
-  }
 
-  componentDidMount() {
-    axios
-      .get("http://localhost:3001/bus-routes/all")
-      .then((response) => {
-        this.setState({
-          data: response.data,
-          results: response.data, // Khởi tạo kết quả tìm kiếm với tất cả dữ liệu
-        });
-        console.log("Data: ", response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }
+    updateRoute = async () => {
+        if (this.state.startLocation && this.state.endLocation) {
+            this.props.updateRoute(this.state.startLocation, this.state.endLocation);
+        }
+    };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchTerm !== this.state.searchTerm) {
-      this.updateResults();
-    }
-    if (
-      prevState.startLocation !== this.state.startLocation ||
-      prevState.endLocation !== this.state.endLocation
-    ) {
-      this.updateRoute();
-    }
-  }
+    handleSearchChange = (e) => {
+        this.setState({ searchTerm: e.target.value });
+    };
 
-  updateResults = () => {
-    const filteredData = this.state.data.filter((item) =>
-      item.route_no.toString().includes(this.state.searchTerm)
-    );
-    this.setState({ results: filteredData });
-  };
+    getItemClicked = async (route) => {
+        // Sử dụng lại logic từ hàm cũ
+        if (route) {
+            const { startLocation, endLocation, busStops } = await getRouteDetails(route);
+            this.setState({
+                startLocation,
+                endLocation,
+                selectedRouteStops: busStops,
+                selectedItem: route,
+                showOverlay: true
+            });
+            this.props.updateRoute(startLocation, endLocation);
+            this.props.updateBusStops(busStops);
+        } 
+        else {
+            this.setState({
+                startLocation: null,
+                endLocation: null,
+                selectedRouteStops: null,
+                selectedItem: null,
+                showOverlay: false
+            });
+        }
+    };
 
-  updateRoute = async () => {
-    if (this.state.startLocation && this.state.endLocation) {
-      this.props.updateRoute(this.state.startLocation, this.state.endLocation);
-    }
-  };
-
-  handleSearchChange = (e) => {
-    this.setState({ searchTerm: e.target.value });
-  };
-
-  getItemClicked = async (item) => {
-    const url = `https://rsapi.goong.io/Geocode?address=${encodeURIComponent(
-      item.end_address
-    )}&api_key=${GOONG_API_KEY}`;
-    const url1 = `https://rsapi.goong.io/Geocode?address=${encodeURIComponent(
-      item.start_address
-    )}&api_key=${GOONG_API_KEY}`;
-
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      const response1 = await fetch(url1);
-      const data1 = await response1.json();
-      if (data.results && data.results.length > 0) {
-        const location = data.results[0].geometry.location;
-        this.setState({ endLocation: location });
-      } else {
-        this.setState({
-          error: "Geocoding failed: No results found",
-          endLocation: null,
-        });
-      }
-
-      if (data1.results && data1.results.length > 0) {
-        const location1 = data1.results[0].geometry.location;
-        this.setState({ startLocation: location1 });
-      } else {
-        this.setState({
-          error: "Geocoding failed: No results found",
-          startLocation: null,
-        });
-      }
-    } catch (error) {
-      this.setState({ error: "Error: " + error.message, endLocation: null });
-    }
-  };
-
-  render() {
-    return (
-      <div className="list">
-        <h3 className="title">Tra cứu</h3>
-        <hr />
-        <div className="search-container">
-          <FontAwesomeIcon icon={faSearch} className="search-icon" />
-          <input
-            className="search"
-            type="number"
-            placeholder="Nhập số xe cần tìm"
-            onChange={this.handleSearchChange}
-          />
-        </div>
-        <div className="list-item">
-          {this.state.results.length ? (
-            this.state.results.map((item) => (
-              <div key={item.id}>
-                <div className="item" onClick={() => this.getItemClicked(item)}>
-                  <p>Tuyến xe buýt số {item.route_no || "NULL"}</p>
-                  <p>{item.schedule || "NULL"}</p>
-                  <p
-                    style={{
-                      display: "inline-block",
-                      width: "fit-content",
-                      marginLeft: "5%",
-                    }}
-                  >
-                    {item.operation_time}
-                  </p>
-                  <p
-                    style={{
-                      display: "inline-block",
-                      width: "fit-content",
-                      marginLeft: "20%",
-                    }}
-                  >
-                    {item.ticket}
-                  </p>
+    render() {
+        const { showOverlay, selectedRouteStops, selectedItem, results, searchTerm } = this.state;
+        const {handleRouteSelect, fetchBusData,  backToList, stopFetchBusLocations} = this.props;
+        
+        return (
+            <div className="list">
+                <h3 className="title">Tra cứu</h3>
+                <hr />
+                <div className="search-container">
+                    <FontAwesomeIcon icon={faSearch} className="search-icon" />
+                    <input
+                        className="search"
+                        type="number"
+                        placeholder="Nhập số xe cần tìm"
+                        value={searchTerm}
+                        onChange={this.handleSearchChange}
+                    />
                 </div>
-              </div>
-            ))
-          ) : (
-            <p>Không tồn tại tuyến xe</p>
-          )}
-        </div>
-      </div>
-    );
-  }
+                <div className="list-item">
+                    {results.length ? results.map(item => (
+                        <div key={item.id}>
+                            <div className="item" onClick={() => this.getItemClicked(item)}>
+                                <p>Tuyến xe buýt số {item.route_no || "NULL"}</p>
+                                <p>{item.schedule || "NULL"}</p>
+                                <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '5%' }}>{item.operation_time}</p>
+                                <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '20%' }}>{item.ticket}</p>
+                            </div>
+                        </div>
+                    )) : <p>Không tồn tại tuyến xe</p>}
+                </div>
+                {showOverlay && (
+                    <BusStopComponent 
+                        
+                        busStops={selectedRouteStops}
+                        selectedRoute={selectedItem}
+                        onClose={() => {
+                            this.setState({ busData: null })
+                            backToList();
+                            handleRouteSelect(null)
+
+                        }}
+                        stopFetchBusLocations = {stopFetchBusLocations}
+                        handleRouteSelect = {handleRouteSelect}
+                        fetchBusData = {fetchBusData}
+                        
+                    />
+                )}
+            </div>
+        );
+    }
 }
 
 export default List;

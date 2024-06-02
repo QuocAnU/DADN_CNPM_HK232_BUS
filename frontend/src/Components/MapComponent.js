@@ -1,216 +1,286 @@
-// src/components/MapComponent.js
-import React, { Component } from "react";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+// MapComponent.js
+import React, { Component } from 'react';
+import 'leaflet/dist/leaflet.css';
 import "./MapComponent.css";
-import logo from "../Image/logo.png";
-import ReactMapGL, {
-  Marker,
-  NavigationControl,
-  Source,
-  Layer,
-} from "@goongmaps/goong-map-react";
-import "@goongmaps/goong-js/dist/goong-js.css";
-import axios from "axios";
+import ReactMapGL, { Marker, NavigationControl, Source, Layer } from '@goongmaps/goong-map-react';
+import '@goongmaps/goong-js/dist/goong-js.css';
+import axios from 'axios';
 import locationImage from "../Image/location.png";
-import AddressSearch from "./AddressSearch";
-// URL của endpoint geocode
+import bus from "../Image/image.png";
+import AddressSearch from './AddressSearch';
+import List from './List';
+import BusStopInfo from './BusStopInfo';
+import './BusStopInfo.css';
+import fetchDirections, { getRouteDetails } from './utils';
 
-const GOONG_MAPTILES_KEY = "zmriqrF5QScgd1LQ4yIxJ4itVMjQBsqFMxpkSeVG"; // Set your goong maptiles key here
-const GOONG_API_KEY = "IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c";
-// Fix default marker icon issue
-// Fix default marker icon issue
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: require("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
-});
+const GOONG_MAPTILES_KEY = 'zmriqrF5QScgd1LQ4yIxJ4itVMjQBsqFMxpkSeVG';
+const GOONG_API_KEY = 'IjDAiJRt75F1n7QSaKLAhzO5b4s1uAreTjS4Q53c';
 
-const decodePolyline = (encoded) => {
-  let index = 0;
-  const len = encoded.length;
-  const polyline = [];
-  let lat = 0;
-  let lng = 0;
 
-  while (index < len) {
-    let b;
-    let shift = 0;
-    let result = 0;
-    do {
-      b = encoded.charCodeAt(index++) - 63;
-      result |= (b & 0x1f) << shift;
-      shift += 5;
-    } while (b >= 0x20);
-
-    const dlat = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
-    lat += dlat;
-
-    shift = 0;
-    result = 0;
-    do {
-      b = encoded.charCodeAt(index++) - 63;
-      result |= (b & 0x1f) << shift;
-      shift += 5;
-    } while (b >= 0x20);
-
-    const dlng = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
-    lng += dlng;
-
-    const latlng = [lng / 1e5, lat / 1e5];
-    polyline.push(latlng);
-  }
-
-  return polyline;
-};
-
-const processResponse = (data) => {
-  if (data.routes && data.routes.length > 0) {
-    const route = data.routes[0];
-    const legs = route.legs;
-    const routeCoordinates = [];
-
-    legs.forEach((leg) => {
-      const steps = leg.steps;
-      steps.forEach((step) => {
-        const polyline = step.polyline;
-        const decodedPolyline = decodePolyline(polyline.points);
-        routeCoordinates.push(...decodedPolyline);
-      });
-    });
-    return routeCoordinates;
-  } else {
-    console.error("No routes found");
-    return [];
-  }
-};
-
-const fetchDirections = async (startAddress, endAddress) => {
-  const url = `https://rsapi.goong.io/Direction?origin=${startAddress.lat},${startAddress.lng}&destination=${endAddress.lat},${endAddress.lng}&vehicle=car&api_key=${GOONG_API_KEY}`;
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    if (data.routes && data.routes.length > 0) {
-      return processResponse(data);
-    } else {
-      console.error("No routes found");
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching directions:", error);
-    return [];
-  }
-};
 
 class MapComponent extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      query: "",
-      suggestions: [],
-      location: null,
-      addrSearching: false,
-      routeCoordinates: [],
-      viewport: {
-        width: "100%",
-        height: "1000px",
-        latitude: 0,
-        longitude: 0,
-        zoom: 3,
-      },
-      currentLocation: null,
+    constructor(props) {
+        super(props);
+        this.state = {
+            query: '',
+            suggestions: [],
+            location: null,
+            addrSearching: false,
+            routeCoordinates: [],
+            viewport: {
+                width: '100%',
+                height: '643px',
+                latitude: 0,
+                longitude: 0,
+                zoom: 3
+            },
+            currentLocation: null,
+            busStopsWithCoords: [], // State to store bus stops with coordinates
+            selectedBusStop: null,
+            busRoutes: [],
+            page: 1,
+            perPage: 10,
+            busData: null,
+        };
+    }
+
+    componentDidMount() {
+        this.watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                this.setState({
+                    currentLocation: { latitude, longitude },
+                    viewport: {
+                        ...this.state.viewport,
+                        latitude,
+                        longitude,
+                        zoom: 14
+                    }
+                });
+            },
+            (error) => {
+                console.error('Error getting current location:', error);
+            }
+        );
+        this.fetchAllBusStops();
+        this.busLocationInterval = setInterval(this.fetchBusLocations, 100000);
+    }
+
+    componentWillUnmount() {
+        navigator.geolocation.clearWatch(this.watchId);
+        clearInterval(this.busLocationInterval);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.startLocation !== this.props.startLocation || prevProps.endLocation !== this.props.endLocation) {
+            if (this.props.startLocation && this.props.endLocation) {
+                this.updateRoute(this.props.startLocation, this.props.endLocation);
+            }
+        }
+
+        if (prevState.busStopsWithCoords !== this.state.busStopsWithCoords) {
+            // console.log('Bus stops updated:', this.state.busStopsWithCoords);
+        }
+    }
+
+    handleZoomChanged = (mapProps, map) => {
+        const zoomLevel = map.getZoom();
+        this.setState({ zoomLevel });
     };
-  }
 
-  componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        this.setState({
-          currentLocation: { latitude, longitude },
-          viewport: {
-            ...this.state.viewport,
-            latitude,
-            longitude,
-            zoom: 14,
-          },
-        });
-      },
-      (error) => {
-        console.error("Error getting current location:", error);
-      }
-    );
-  }
-
-  handleSuggestionSelect = async (suggestion) => {
-    const location = await this.getPlaceDetails(suggestion.place_id);
-    if (location && this.state.currentLocation) {
-      const routeCoords = await fetchDirections(
-        {
-          lat: this.state.currentLocation.latitude,
-          lng: this.state.currentLocation.longitude,
-        },
-        location
-      );
-      this.setState({ routeCoordinates: routeCoords });
-    }
-  };
-
-  getPlaceDetails = async (placeId) => {
-    try {
-      const response = await axios.get(
-        `https://rsapi.goong.io/Place/Detail?api_key=${GOONG_API_KEY}&place_id=${placeId}`
-      );
-      const location = response.data.result.geometry.location;
-      if (location) {
-        this.setState({
-          location: { lat: location.lat, lng: location.lng },
-          viewport: {
-            ...this.state.viewport,
-            latitude: location.lat,
-            longitude: location.lng,
-            zoom: 14,
-          },
-        });
-      }
-      return location;
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin chi tiết địa điểm:", error);
-      return null;
-    }
-  };
-
-  updateRoute = async (startLocation, endLocation) => {
-    const routeCoords = await fetchDirections(startLocation, endLocation);
-    if (routeCoords) {
-      this.setState({
-        routeCoordinates: routeCoords,
-        viewport: {
-          ...this.state.viewport,
-          latitude: startLocation.lat,
-          longitude: startLocation.lng,
-          zoom: 14,
-        },
-      });
-    }
-  };
-
-  render() {
-    const routeLayer = {
-      id: "route",
-      type: "line",
-      source: "route",
-      layout: {
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "#000000",
-        "line-width": 5,
-      },
+    getPlaceDetails = async (placeId) => {
+        if (placeId) {
+            const response = await axios.get(`https://rsapi.goong.io/Place/Detail?api_key=${GOONG_API_KEY}&place_id=${placeId}`);
+            const location = response.data.result.geometry.location;
+            if (location) {
+                this.setState({
+                    location: { lat: location.lat, lng: location.lng },
+                    viewport: {
+                        ...this.state.viewport,
+                        latitude: location.lat,
+                        longitude: location.lng,
+                        zoom: 14
+                    }
+                });
+            }
+            return location;
+        } else {
+            // this.setState({
+            //     location: null,
+            // });
+        }
     };
+
+    handleSuggestionSelect = async (suggestion) => {
+        if (suggestion) {
+            const location = await this.getPlaceDetails(suggestion.place_id);
+            if (location && this.state.currentLocation) {
+                const routeCoords = await fetchDirections(
+                    { lat: this.state.currentLocation.latitude, lng: this.state.currentLocation.longitude },
+                    location
+                );
+                this.setState({ routeCoordinates: routeCoords });
+            }
+        }
+        else {
+            this.setState({
+                location: null,
+            });
+            this.setState({ routeCoordinates: [] });
+        }
+    };
+
+    fetchAllBusStops = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/bus-stop/all');
+            const busStopsData = response.data;
+
+            // Aggregate bus stops by their names
+            const busStopsMap = busStopsData.reduce((map, busStop) => {
+                if (!map[busStop.name]) {
+                    map[busStop.name] = {
+                        ...busStop,
+                        routes: []
+                    };
+                }
+                map[busStop.name].routes.push(busStop.route_no);
+                return map;
+            }, {});
+            const busStopsWithCoords = Object.values(busStopsMap).map(busStop => ({
+            ...busStop,
+            location: { lat: busStop.latitude, lng: busStop.longitude }
+        }));
+            // console.log("busStopsWithCoords: ",busStopsWithCoords);
+            this.setState({ busStopsWithCoords });
+        } catch (error) {
+            console.error('Error fetching bus stops:', error);
+        }
+    };
+
+    updateBusStops = (busStops) => {
+        console.log("busStops: ", busStops);
+        const busStopsWithCoords = busStops.map((busStop) => ({
+            ...busStop,
+            location: { lat: busStop.latitude, lng: busStop.longitude }
+        }));
+        console.log("busStopsWithCoords: ", busStopsWithCoords)
+        this.setState({ busStopsWithCoords });
+    };
+
+    updateRoute = async (startLocation, endLocation) => {
+        const routeCoords = (startLocation && endLocation) ? await fetchDirections(startLocation, endLocation) : null;
+        if (routeCoords) {
+            this.setState({
+                routeCoordinates: routeCoords,
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: startLocation.lat,
+                    longitude: startLocation.lng,
+                    zoom: 14
+                }
+            });
+        }
+    };
+    renderRoute = async (route) => {
+        try {
+            route = await axios.get(`http://localhost:3001/bus-routes/${route}`)
+            console.log("Route.data: ", route.data);
+            const { startLocation, endLocation, busStops } = await getRouteDetails(route.data);
+            const routeCoordinates = await fetchDirections(startLocation, endLocation);
+            this.setState({
+                startLocation,
+                endLocation,
+                busStopsWithCoords: busStops.map((busStop) => ({
+                    ...busStop,
+                    location: { lat: busStop.latitude, lng: busStop.longitude }
+                })),
+                routeCoordinates,
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: startLocation.lat,
+                    longitude: startLocation.lng,
+                    zoom: 14
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching route details:', error);
+        }
+    };
+    handleBusStopClick = async (busStop) => {
+        this.setState({ selectedBusStop: busStop, activeTab: 'busStop-info' });
+        try {
+            console.log(busStop.name)
+            const response_busRoutes = await axios.get(`http://localhost:3001/bus-stop/bus-route/${busStop.name}`);
+            
+            const busRoutes = response_busRoutes.data;
+            console.log("busRoutes: ", busRoutes.map(route => route.route_no));
+            const busStopWithRoutes = { ...busStop, routes: busRoutes.map(route => route.route_no) };
+            this.setState({ selectedBusStop: busStopWithRoutes });
+            this.setState({ busRoutes: busRoutes });
+        } catch (error) {
+            console.error('Error fetching bus routes:', error);
+        }
+    }
+    handleBusRouteClick = async (route) => {
+        if (route) {
+            const { startLocation, endLocation, busStops } = await getRouteDetails(route);
+            const routeCoordinates = await fetchDirections(startLocation, endLocation);
+            this.setState({
+                startLocation,
+                endLocation,
+                busStopsWithCoords: busStops.map((busStop) => ({
+                    ...busStop,
+                    location: { lat: busStop.latitude, lng: busStop.longitude }
+                })),
+                routeCoordinates,
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: startLocation.lat,
+                    longitude: startLocation.lng,
+                    zoom: 14
+                }
+            });
+        } else {
+            // console.error('Error handling bus route click:', error);
+        }
+    };
+    // handleBusStopClick = async (busStop) => {
+    //     this.setState({ selectedBusStop: busStop});
+    //     try {
+    //         const response_busRoutes = await axios.get(`http://localhost:3001/bus-stop/bus-route/${busStop.name}`);            
+    //         this.setState({ busRoutes: response_busRoutes.data });
+    //         console.log("busRoutes: ", response_busRoutes.data);
+    //     } catch (error) {
+    //         console.error('Error fetching bus routes:', error);
+    //     }
+    // }
+
+    handleRouteClick = async (route) => {
+        // console.log(route);
+        const routeData = await axios.get(`http://localhost:3001/bus-routes/${route}`);
+        // console.log(routeData);
+        this.listRef.getItemClicked(routeData.data);
+    };
+    backToList = async () => {
+        this.listRef.getItemClicked(null);
+        this.setState({ routeCoordinates: [] });
+        this.fetchAllBusStops();
+    }
+    // get bus location
+    fetchBusLocations = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/adafruit/feed');
+            console.log(response.data);
+            this.setState({ busData: response.data });
+        } catch (error) {
+            console.error('Error fetching bus locations:', error);
+        }
+    };
+    stopFetchBusLocations = async () => {
+        this.setState({ busData: null });
+    }
+    mapRef = React.createRef();
+
 
     return (
       <div style={{ width: "100%", border: '1px solid white', borderRadius: '20px' }}>
@@ -272,21 +342,7 @@ class MapComponent extends Component {
       </div>
     );
   }
+
 }
 
 export default MapComponent;
-export class Header extends Component {
-  render() {
-    return (
-      <div className="header">
-        <div className="left">
-          <img src={logo} alt="logo" className="logo" />
-          <h1 id="app-name">BUS LINKER</h1>
-        </div>
-        <button className="nav">
-          <a href="#home">Đăng nhập</a>
-        </button>
-      </div>
-    );
-  }
-}
