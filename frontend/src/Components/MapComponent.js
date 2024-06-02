@@ -213,7 +213,7 @@ class MapComponent extends Component {
     };
 
     return (
-      <div style={{ position: "relative", width: "100%" }}>
+      <div style={{ width: "100%", border: '1px solid white', borderRadius: '20px' }}>
         <AddressSearch onSuggestionSelect={this.handleSuggestionSelect} />
         <ReactMapGL
           {...this.state.viewport}
@@ -222,7 +222,7 @@ class MapComponent extends Component {
           }
           goongApiAccessToken={GOONG_MAPTILES_KEY}
         >
-          <div style={{ position: "absolute", left: "21%", top: "5%" }}>
+          <div style={{ marginLeft: '3%', marginTop: '8%', position: 'absolute' }}>
             <NavigationControl />
           </div>
           {this.state.currentLocation && (
