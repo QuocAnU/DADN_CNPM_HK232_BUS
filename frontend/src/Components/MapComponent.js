@@ -281,104 +281,68 @@ class MapComponent extends Component {
     }
     mapRef = React.createRef();
 
-    render() {
-         
-        const { selectedBusStop , busStopsWithCoords, routeCoordinates, viewport, busData } = this.state;
-        console.log(busData)
-        // if (selectedBusStop) {this.handleBusStopClick(selectedBusStop);}
-        const routeLayer = {
-            id: 'route',
-            type: 'line',
-            source: 'route',
-            layout: {
-                'line-join': 'round',
-                'line-cap': 'round'
-            },
-            paint: {
-                'line-color': '#000000',
-                'line-width': 5
-            }
-        }; 
-        return (
-            <div style={{ position: 'relative', width: '100%' }}>
-                <AddressSearch onSuggestionSelect={this.handleSuggestionSelect} />
-                <List 
-                    items={busStopsWithCoords.map((busStop) => ({
-                                    ...busStop,
-                                    onClick: () => this.handleBusStopClick(busStop)
-                                }))}
-                    ref={(ref) => { this.listRef = ref; }} 
-                    updateRoute={this.updateRoute} 
-                    updateBusStops={this.updateBusStops} 
-                    handleRouteSelect={this.handleRouteClick}
-                    fetchBusData={this.fetchBusLocations}
-                    stopFetchBusLocations = {this.stopFetchBusLocations}
-                    backToList={this.backToList}
-                    
-                />
-                <ReactMapGL
-                    ref={this.mapRef}
-                    {...viewport}
-                    onViewportChange={(nextViewport) => this.setState({ viewport: nextViewport })}
-                    goongApiAccessToken={GOONG_MAPTILES_KEY}
-                >
-                    <div style={{ position: 'absolute', left: '21%', top: '7%' }}>
-                        <NavigationControl />
-                    </div>
-                    {this.state.currentLocation && (
-                        <Marker latitude={this.state.currentLocation.latitude} longitude={this.state.currentLocation.longitude}>
-                            <div style={{ background: 'red', borderRadius: '50%', width: '10px', height: '10px' }}></div>
-                        </Marker>
-                    )}
-                    {this.state.location ? (
-                        <Marker latitude={this.state.location.lat} longitude={this.state.location.lng}>
-                            <img src={locationImage} alt="location" style={{ height: '40px', width: '40px' }} />
-                        </Marker>
-                        
-                    ) : null}
-                    <Source id="route" type="geojson" data={{
-                        type: 'Feature',
-                        properties: {},
-                        geometry: {
-                            type: 'LineString',
-                            coordinates: routeCoordinates,
-                        }
-                    }}>
-                        <Layer {...routeLayer} />
-                    </Source>
-                    {   this.state.viewport.zoom > 12 && this.state.viewport.zoom < 17 && 
-                    busStopsWithCoords.map(busStop => (
-                        busStop.location && busStop.location.lat && busStop.location.lng && (
-                            <Marker key={busStop._id} latitude={busStop.location.lat} longitude={busStop.location.lng}  onClick={() => this.handleBusStopClick(busStop)}>
-                                <img src={bus} alt="bus stop" style={{ height: '20px', width: '20px' }} />
-                            </Marker>
-                        )
-                    ))}
-                    {selectedBusStop ? (
-                        <BusStopInfo
-                            busStop={selectedBusStop}
-                            onClose={() => this.setState({ selectedBusStop: null, busData: null })}
-                            onRouteClick={
-                                this.handleRouteClick
-                            } 
-                            busData = {busData}
-                            // handleTabClick={this.handleTabClick}
-                            busRoutes={this.state.busRoutes}
-                            fetchBusData={this.fetchBusLocations}
-                            // Pass the function here
-                        />
-                    ) : null}
-                    {busData && 
-                        <Marker key={busData.latitude} latitude={busData.latitude} longitude={busData.longitude}>
-                            <div style={{ background: 'blue', borderRadius: '50%', width: '10px', height: '10px' }}>
-                                <span>{bus['people-num']}</span>
-                            </div>
-                        </Marker>
-                    }
-                </ReactMapGL>
-            </div>
-        );
-    }
+
+    return (
+      <div style={{ width: "100%", border: '1px solid white', borderRadius: '20px' }}>
+        <AddressSearch onSuggestionSelect={this.handleSuggestionSelect} />
+        <ReactMapGL
+          {...this.state.viewport}
+          onViewportChange={(nextViewport) =>
+            this.setState({ viewport: nextViewport })
+          }
+          goongApiAccessToken={GOONG_MAPTILES_KEY}
+        >
+          <div style={{ marginLeft: '3%', marginTop: '8%', position: 'absolute' }}>
+            <NavigationControl />
+          </div>
+          {this.state.currentLocation && (
+            <Marker
+              latitude={this.state.currentLocation.latitude}
+              longitude={this.state.currentLocation.longitude}
+            >
+              <div
+                style={{
+                  background: "red",
+                  borderRadius: "50%",
+                  width: "10px",
+                  height: "10px",
+                }}
+              ></div>
+            </Marker>
+          )}
+          {this.state.location && (
+            <Marker
+              latitude={this.state.location.lat}
+              longitude={this.state.location.lng}
+            >
+              <img
+                src={locationImage}
+                alt="location"
+                style={{ height: "25px", width: "30px" }}
+              />
+            </Marker>
+          )}
+          {this.state.routeCoordinates.length > 0 && (
+            <Source
+              id="route"
+              type="geojson"
+              data={{
+                type: "Feature",
+                properties: {},
+                geometry: {
+                  type: "LineString",
+                  coordinates: this.state.routeCoordinates,
+                },
+              }}
+            >
+              <Layer {...routeLayer} />
+            </Source>
+          )}
+        </ReactMapGL>
+      </div>
+    );
+  }
+
 }
 
 export default MapComponent;
