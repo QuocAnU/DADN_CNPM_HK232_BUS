@@ -59,6 +59,10 @@ class BusStopInfo extends Component {
                     <div>
                         <p>Tuyến xe số: {busData.route_no}</p>
                         <p>Biển số: {busData.number_plate}</p>
+                        <p>Tọa độ: {busData.latitude}, {busData.longitude}</p>
+                        <p>Số người: {busData.people_num}</p>
+                        <p>Nhiệt độ: {busData.temperature}</p>
+                        <p>Độ ẩm: {busData.humidty}</p>
                     </div>
                     
                     : null

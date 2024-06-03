@@ -1,0 +1,60 @@
+/* component List */
+.list {
+    position: absolute;
+    z-index: 1000;
+    left: 0;
+    background-color: white;
+    height: 1000px;
+    width: 20%;
+    max-height: 643px; /* Ví dụ: giới hạn chiều cao của div là 643px */
+    overflow-y: auto;
+  }
+  .title {
+    margin: 5px 0 0 50% ;
+    height: 30px;
+    transform: translateX(-50%);
+    width: fit-content;
+    padding: 0;
+  }
+  .search-container {
+    display: grid;
+    border:1px solid;
+    background:white;
+    padding:5px;
+    margin: 0 0 0 50% ;
+    transform: translateX(-50%);
+    height: 30px;
+    padding-left: 30px;
+    width: 80%;
+    border-radius: 16px;
+    justify-content: center;
+  }
+  
+  .search {
+    border:none;
+    outline:none;
+    font-size:16px;
+    width: 100%;
+  }
+  .search-icon {
+    position: absolute;
+    z-index: 1000;
+    top: 12px;
+    left: 15px;
+    color: #ccc;
+  }
+  
+  .list-item {
+    border: 2px dashed #000;
+    border-radius: 5px;
+    margin-top: 5px;
+    position: relative;
+  }
+  
+  .item {
+  background-color: #EFF1F8;
+  border-radius: 5px;
+  width: 90%;
+  margin-left: 5%;
+  margin-bottom: 15px;
+  }

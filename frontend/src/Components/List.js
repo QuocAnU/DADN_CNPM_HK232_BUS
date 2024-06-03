@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import './MapComponent.css';
+import './List.css';
 import BusStopComponent from './BusStopComponent';
 import { getRouteDetails } from './utils'; // Import the common function
 
