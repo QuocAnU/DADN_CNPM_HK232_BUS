@@ -280,7 +280,6 @@ class MapComponent extends Component {
         this.setState({ busData: null });
     }
     mapRef = React.createRef();
-
     render() {
          
         const { selectedBusStop , busStopsWithCoords, routeCoordinates, viewport, busData } = this.state;
