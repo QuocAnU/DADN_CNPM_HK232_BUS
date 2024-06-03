@@ -13,7 +13,7 @@ class BusStopInfo extends Component {
     fetchBusData= async () => {
         try {
             const response = await axios.get('http://localhost:3001/adafruit/feed');
-            console.log("one more time")
+            // console.log("one more time")
             this.setState({busData: response.data});
         } catch (error) {
             console.error('Error fetching bus locations:', error);
@@ -32,7 +32,7 @@ class BusStopInfo extends Component {
     render() {
         const { busStop, onClose, onRouteClick} = this.props;
         const { busData } =this.state;
-        if (busData) console.log(busData, this.state.activeTab1);
+        // if (busData) console.log(busData, this.state.activeTab1);
         const { activeTab1 } = this.state;
         return (
             <div className="bus-stop-info">
@@ -124,7 +124,7 @@ class BusRouteInfo extends Component {
         const { selectedRoute } = this.props;
         var schedule = reverseStations(selectedRoute.schedule);
 
-        console.log("selectedRoute: ",selectedRoute);
+        // console.log("selectedRoute: ",selectedRoute);
         return (
             <div className='route-info'>
                 <p>Chi tiết tuyến xe</p>

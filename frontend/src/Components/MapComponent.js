@@ -158,12 +158,12 @@ class MapComponent extends Component {
     };
 
     updateBusStops = (busStops) => {
-        console.log("busStops: ", busStops);
+        // console.log("busStops: ", busStops);
         const busStopsWithCoords = busStops.map((busStop) => ({
             ...busStop,
             location: { lat: busStop.latitude, lng: busStop.longitude }
         }));
-        console.log("busStopsWithCoords: ", busStopsWithCoords)
+        // console.log("busStopsWithCoords: ", busStopsWithCoords)
         this.setState({ busStopsWithCoords });
     };
 
@@ -184,7 +184,7 @@ class MapComponent extends Component {
     renderRoute = async (route) => {
         try {
             route = await axios.get(`http://localhost:3001/bus-routes/${route}`)
-            console.log("Route.data: ", route.data);
+            // console.log("Route.data: ", route.data);
             const { startLocation, endLocation, busStops } = await getRouteDetails(route.data);
             const routeCoordinates = await fetchDirections(startLocation, endLocation);
             this.setState({
@@ -209,11 +209,11 @@ class MapComponent extends Component {
     handleBusStopClick = async (busStop) => {
         this.setState({ selectedBusStop: busStop, activeTab: 'busStop-info' });
         try {
-            console.log(busStop.name)
+            // console.log(busStop.name)
             const response_busRoutes = await axios.get(`http://localhost:3001/bus-stop/bus-route/${busStop.name}`);
             
             const busRoutes = response_busRoutes.data;
-            console.log("busRoutes: ", busRoutes.map(route => route.route_no));
+            // console.log("busRoutes: ", busRoutes.map(route => route.route_no));
             const busStopWithRoutes = { ...busStop, routes: busRoutes.map(route => route.route_no) };
             this.setState({ selectedBusStop: busStopWithRoutes });
             this.setState({ busRoutes: busRoutes });
@@ -270,7 +270,7 @@ class MapComponent extends Component {
     fetchBusLocations = async () => {
         try {
             const response = await axios.get('http://localhost:3001/adafruit/feed');
-            console.log(response.data);
+            // console.log(response.data);
             this.setState({ busData: response.data });
         } catch (error) {
             console.error('Error fetching bus locations:', error);
@@ -284,7 +284,7 @@ class MapComponent extends Component {
     render() {
          
         const { selectedBusStop , busStopsWithCoords, routeCoordinates, viewport, busData } = this.state;
-        console.log(busData)
+        // console.log(busData)
         // if (selectedBusStop) {this.handleBusStopClick(selectedBusStop);}
         const routeLayer = {
             id: 'route',
