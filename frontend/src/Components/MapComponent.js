@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 import 'leaflet/dist/leaflet.css';
 import "./MapComponent.css";
-import "./List.css"
 import ReactMapGL, { Marker, NavigationControl, Source, Layer } from '@goongmaps/goong-map-react';
 import '@goongmaps/goong-js/dist/goong-js.css';
 import axios from 'axios';

@@ -23,7 +23,7 @@ class HomePage extends React.Component {
             <div className="HomePage">
                 <Header />
                 <div className="main-content">
-                    <List updateRoute={this.updateRoute} />
+                    {/* <List updateRoute={this.updateRoute} /> */}
                     <MapComponent ref={this.mapComponentRef} />
                 </div>
             </div>
