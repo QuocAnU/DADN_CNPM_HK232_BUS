@@ -18,7 +18,7 @@ class BusStopComponent extends Component {
     fetchBusLocations = async () => {
         try {
             const response = await axios.get('http://localhost:3001/adafruit/feed');
-            console.log(response.data);
+            // console.log(response.data);
             this.setState({ busData: response.data });
         } catch (error) {
             console.error('Error fetching bus locations:', error);
@@ -31,11 +31,11 @@ class BusStopComponent extends Component {
     handleBusStopClick = async (busStop) => {
         this.setState({ selectedBusStop: busStop, activeTab: 'busStop-info' });
         try {
-            console.log(busStop.name)
+            // console.log(busStop.name)
             const response_busRoutes = await axios.get(`http://localhost:3001/bus-stop/bus-route/${busStop.name}`);
             
             const busRoutes = response_busRoutes.data;
-            console.log("busRoutes: ", busRoutes.map(route => route.route_no));
+            // console.log("busRoutes: ", busRoutes.map(route => route.route_no));
             const busStopWithRoutes = { ...busStop, routes: busRoutes.map(route => route.route_no) };
             this.setState({ selectedBusStop: busStopWithRoutes });
             this.setState({ busRoutes: busRoutes });

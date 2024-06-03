@@ -50,6 +50,7 @@ class AddressSearch extends Component {
                         this.setState({ addrSearching: false });
                         this.setState({ query: ""});
                         this.setState({ suggestions: [] });
+                        this.setState({icon: faSearch})
                     }
                 }/>
                 <input
