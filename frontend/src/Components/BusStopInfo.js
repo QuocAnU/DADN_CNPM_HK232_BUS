@@ -10,11 +10,11 @@ class BusStopInfo extends Component {
         activeTab1: 'route',
         busData: null,
     };
-    fetchBusData= async () => {
+    fetchBusData = async () => {
         try {
             const response = await axios.get('http://localhost:3001/adafruit/feed');
             // console.log("one more time")
-            this.setState({busData: response.data});
+            this.setState({ busData: response.data });
         } catch (error) {
             console.error('Error fetching bus locations:', error);
             return null;
@@ -30,8 +30,8 @@ class BusStopInfo extends Component {
     };
 
     render() {
-        const { busStop, onClose, onRouteClick} = this.props;
-        const { busData } =this.state;
+        const { busStop, onClose, onRouteClick } = this.props;
+        const { busData } = this.state;
         // if (busData) console.log(busData, this.state.activeTab1);
         const { activeTab1 } = this.state;
         return (
@@ -41,27 +41,32 @@ class BusStopInfo extends Component {
                     <h2 style={{ marginLeft: "10px" }}>{busStop.name}</h2>
                 </header>
                 <div className="tabs">
-                    <button className={activeTab1 === 'route' ? 'active' : ''} onClick={() => this.handleTabClick('route')}>Tuyến đi qua</button>
-                    <button className={activeTab1 === 'bus' ? 'active' : ''} onClick={() => this.handleTabClick('bus')}>Danh sách xe</button>
+                    <button className={activeTab1 === 'route button-i ' ? 'active button-i' : 'button-i'} onClick={() => this.handleTabClick('route')}>Tuyến đi qua</button>
+                    <button className={activeTab1 === 'bus button-i' ? 'active button-i' : 'button-i'} onClick={() => this.handleTabClick('bus')}>Danh sách xe</button>
                 </div>
                 <div>
-                    {this.state.activeTab1 === "route" ? <p>Routes: {busStop.routes ? busStop.routes.join(', ') : busStop.route_no}</p> : null}
+                    {this.state.activeTab1 === "route" ? <p style={{ marginLeft: '10px' }}>Routes: {busStop.routes ? busStop.routes.join(', ') : busStop.route_no}</p> : null}
                     {this.state.activeTab1 === "route" ? (busStop.routes && busStop.routes.map(route => (
-                        <button key={route} onClick={() => {
+                        <button key={route} style={{ marginLeft: '10px' }} className='button-i' onClick={() => {
                             onClose()
-                            onRouteClick(route)}}>
+                            onRouteClick(route)
+                        }}>
                             Show Route {route}
                         </button>
                     ))) : null}
-                    {this.state.activeTab1 === "bus" ? 
-                     
+                    {this.state.activeTab1 === "bus" ?
+
                         busData &&
-                    <div>
-                        <p>Tuyến xe số: {busData.route_no}</p>
-                        <p>Biển số: {busData.number_plate}</p>
-                    </div>
-                    
-                    : null
+                        <div>
+                            <p>Tuyến xe số: {busData.route_no}</p>
+                            <p>Biển số: {busData.number_plate}</p>
+                            <p>Tọa độ: {busData.latitude}, {busData.longitude}</p>
+                            <p>Số người: {busData.people_num}</p>
+                            <p>Nhiệt độ: {busData.temperature}</p>
+                            <p>Độ ẩm: {busData.humidty}</p>
+                        </div>
+
+                        : null
                     }
                 </div>
             </div>
@@ -120,7 +125,7 @@ function reverseStations(stations) {
 }
 
 class BusRouteInfo extends Component {
-    render(){
+    render() {
         const { selectedRoute } = this.props;
         var schedule = reverseStations(selectedRoute.schedule);
 
