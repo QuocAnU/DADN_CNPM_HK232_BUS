@@ -33,6 +33,9 @@
   line-height: 1;
   letter-spacing: 0.01em;
   text-align: left;
+  padding: 10px;
+  width: 220px;
+  color: black;
 }
 
 .rightH {
