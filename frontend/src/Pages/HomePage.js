@@ -14,7 +14,7 @@ class HomePage extends React.Component {
 
   render() {
     return (
-      <div style={{ backgroundColor: '#f5f5f5', width: '100%', maxHeight: '100vh', overflow: 'hidden' }}>
+      <div style={{ backgroundColor: '#ffffff', width: '100%', maxHeight: '100vh', overflow: 'hidden' }}>
         <Header />
         <div style={{ marginTop: '20px', display: 'flex', height: '100vh', maxHeight: '100vw', width: '100%', overflow: 'hidden', marginBottom: '20px' }}>
           <div style={{ flex: '0 0 25%' }}>

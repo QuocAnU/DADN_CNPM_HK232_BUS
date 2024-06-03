@@ -53,7 +53,7 @@ export default function RouteCard(props) {
         </div>
       </div>
       <p className="t">
-        {props.start_address}-{props.end_address}
+        {props.name}
       </p>
       <p className="t">{props.operation_time}</p>
 
