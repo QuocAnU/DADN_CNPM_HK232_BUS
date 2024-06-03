@@ -27,13 +27,13 @@ class BusStopComponent extends Component {
     handleTabClick = (tab) => {
         this.setState({ activeTab: tab });
     }
-    
+
     handleBusStopClick = async (busStop) => {
         this.setState({ selectedBusStop: busStop, activeTab: 'busStop-info' });
         try {
             // console.log(busStop.name)
             const response_busRoutes = await axios.get(`http://localhost:3001/bus-stop/bus-route/${busStop.name}`);
-            
+
             const busRoutes = response_busRoutes.data;
             // console.log("busRoutes: ", busRoutes.map(route => route.route_no));
             const busStopWithRoutes = { ...busStop, routes: busRoutes.map(route => route.route_no) };
@@ -62,7 +62,7 @@ class BusStopComponent extends Component {
     //     try {
     //         console.log("route clicked", route.route_no);
     //         const response_busStops = await axios.get(`http://localhost:3001/bus-stop/bus-route/${route.name}`);
-            
+
     //         const route_clicked = response_busStops.data.filter(route_cl => route_cl.route_no === route.route_no);
     //         console.log("response route: ", route_clicked[0].route_no);
     //         const response_route = await axios.get(`http://localhost:3001/bus-routes/${route_clicked[0].route_no}`);
@@ -93,8 +93,8 @@ class BusStopComponent extends Component {
     //     }
     // };
     render() {
-        const { activeTab, selectedBusStop,  page, perPage } = this.state;
-        const { busStops, selectedRoute, onClose, handleRouteSelect, fetchBusData, stopFetchBusLocations} = this.props;
+        const { activeTab, selectedBusStop, page, perPage } = this.state;
+        const { busStops, selectedRoute, onClose, handleRouteSelect, fetchBusData, stopFetchBusLocations } = this.props;
         const indexOfLastBusStop = page * perPage;
         const indexOfFirstBusStop = indexOfLastBusStop - perPage;
         const currentBusStops = busStops.slice(indexOfFirstBusStop, indexOfLastBusStop);
@@ -108,8 +108,8 @@ class BusStopComponent extends Component {
                     <h2 style={{ marginLeft: "10px" }}>Tuyến xe: {selectedRoute.route_no}</h2>
                 </header>
                 <div className="tabs">
-                    <button className={activeTab === 'stops' ? 'active' : ''} onClick={() => this.handleTabClick('stops')}>Các trạm dừng</button>
-                    <button className={activeTab === 'details' ? 'active' : ''} onClick={() => this.handleTabClick('details')}>Thông tin chi tiết</button>
+                    <button className={activeTab === 'stops button-i' ? 'active button-i' : 'button-i'} onClick={() => this.handleTabClick('stops')}>Các trạm dừng</button>
+                    <button className={activeTab === 'details button-i' ? 'active button-i' : 'button-i'} onClick={() => this.handleTabClick('details')}>Thông tin chi tiết</button>
                 </div>
                 {activeTab === 'stops' && (
                     <BusStopList
@@ -123,19 +123,19 @@ class BusStopComponent extends Component {
                 {activeTab === 'details' && <BusRouteInfo selectedRoute={selectedRoute} />}
                 {activeTab === 'busStop-info' && (selectedBusStop ? (
                     <BusStopInfo
-                        
+
                         busStop={selectedBusStop}
                         onClose={
                             () => {
                                 this.handleCloseBusStopInfo()
-                                this.setState({busData: null})
+                                this.setState({ busData: null })
                                 stopFetchBusLocations();
                             }
                         }
                         onRouteClick={handleRouteSelect}
                         busRoutes={this.state.busRoutes}
                         fetchBusData={fetchBusData}
-                        
+
                     />
                 ) : null)
                 }

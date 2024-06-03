@@ -16,14 +16,8 @@ class HomePage extends React.Component {
     return (
       <div style={{ backgroundColor: '#ffffff', width: '100%', maxHeight: '100vh', overflow: 'hidden' }}>
         <Header />
-        <div style={{ marginTop: '20px', display: 'flex', height: '100vh', maxHeight: '100vw', width: '100%', overflow: 'hidden', marginBottom: '20px' }}>
-          <div style={{ flex: '0 0 25%' }}>
-            <List updateRoute={this.updateRoute} />
-          </div>
-          <div style={{ flex: 1, overflowY: 'hidden', marginLeft: '10px', border: '1px solid white', borderRadius: '20px' }}>
-            <MapComponent ref={this.mapComponentRef} />
-          </div>
-        </div>
+
+        <MapComponent ref={this.mapComponentRef} />
       </div>
     );
   }
