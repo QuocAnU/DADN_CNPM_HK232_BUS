@@ -31,9 +31,10 @@
 
 .nav {
   display: flex;
-  margin-right: 10rem;
-  gap: 1rem;
-  background-color: #0A4FB9;
+  margin-right: 8em;
+  /* gap: 1rem; */
+  background-color: #e7e7e7;
+  border: 1px solid rgb(173, 171, 171);
   border-radius: 16px;
   height: 40px;
   width: 100px;
@@ -42,7 +43,7 @@
 }
 
 .nav a {
-  color: white;
+  color: black;
   text-decoration: none;
   
 }
@@ -56,7 +57,7 @@
   background-color: #ffffff;
   left: 0;
 
-  height: 80vh;
+  height: 85vh;
   /* width: 300px; */
   background-color: #f5f5f5;
   /* padding-inline: 20px; */
@@ -100,17 +101,22 @@
 }
 
 .list-item {
-  border: 2px dashed #000;
+  /* padding-inline: 10px; */
+  /* border: 2px dashed #000; */
   border-radius: 5px;
-  margin-top: 5px;
-  position: relative;
+  margin-left: 20px;
+  margin-right: auto;
+  margin-top: 10px;
+  overflow-y: auto ;
+  max-width: 400px;
+  /* position: relative; */
 }
 
 .item {
-background-color: #EFF1F8;
+background-color: #e2e4eb;
 border-radius: 5px;
 width: 90%;
-margin-left: 5%;
+padding: 10px;
 margin-bottom: 15px;
 }
 /* component findAddress */
