@@ -24,9 +24,7 @@ class BusStopInfo extends Component {
         this.setState({ activeTab1: tab });
         if (tab === 'bus') {
             this.props.fetchBusData();
-            this.fetchBusData();
-            // this function is call every 10 seconds
-            this.busLocationInterval = setInterval(this.fetchBusData, 10000);
+            this.busLocationInterval = setInterval(this.fetchBusData, 1000);
             // this.busLocationInterval = setInterval(this.fetchBusData, 1000);
         }
     };
@@ -64,7 +62,7 @@ class BusStopInfo extends Component {
                         <p>Tọa độ: {busData.latitude}, {busData.longitude}</p>
                         <p>Số người: {busData.people_num}</p>
                         <p>Nhiệt độ: {busData.temperature}</p>
-                        <p>Độ ẩm: {busData.humidity}</p>
+                        <p>Độ ẩm: {busData.humidty}</p>
                     </div>
                     
                     : null
