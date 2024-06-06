@@ -77,7 +77,7 @@ class List extends Component {
             });
             this.props.updateRoute(startLocation, endLocation);
             this.props.updateBusStops(busStops);
-        } 
+        }
         else {
             this.setState({
                 startLocation: null,
@@ -91,8 +91,8 @@ class List extends Component {
 
     render() {
         const { showOverlay, selectedRouteStops, selectedItem, results, searchTerm } = this.state;
-        const {handleRouteSelect, fetchBusData,  backToList, stopFetchBusLocations} = this.props;
-        
+        const { handleRouteSelect, fetchBusData, backToList, stopFetchBusLocations } = this.props;
+
         return (
             <div className="list">
                 <h3 className="title">Tra cứu</h3>
@@ -112,7 +112,7 @@ class List extends Component {
                         <div key={item.id}>
                             <div className="item" onClick={() => this.getItemClicked(item)}>
                                 <p>Tuyến xe buýt số {item.route_no || "NULL"}</p>
-                                <p>{item.schedule || "NULL"}</p>
+                                <p>{item.name || "NULL"}</p>
                                 <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '5%' }}>{item.operation_time}</p>
                                 <p style={{ display: 'inline-block', width: 'fit-content', marginLeft: '20%' }}>{item.ticket}</p>
                             </div>
@@ -120,8 +120,8 @@ class List extends Component {
                     )) : <p>Không tồn tại tuyến xe</p>}
                 </div>
                 {showOverlay && (
-                    <BusStopComponent 
-                        
+                    <BusStopComponent
+
                         busStops={selectedRouteStops}
                         selectedRoute={selectedItem}
                         onClose={() => {
@@ -130,10 +130,10 @@ class List extends Component {
                             handleRouteSelect(null)
 
                         }}
-                        stopFetchBusLocations = {stopFetchBusLocations}
-                        handleRouteSelect = {handleRouteSelect}
-                        fetchBusData = {fetchBusData}
-                        
+                        stopFetchBusLocations={stopFetchBusLocations}
+                        handleRouteSelect={handleRouteSelect}
+                        fetchBusData={fetchBusData}
+
                     />
                 )}
             </div>

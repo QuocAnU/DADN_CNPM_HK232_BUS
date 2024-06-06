@@ -14,12 +14,10 @@ class HomePage extends React.Component {
 
   render() {
     return (
-      <div className="HomePage">
+      <div style={{ backgroundColor: '#ffffff', width: '100%', maxHeight: '100vh', overflow: 'hidden' }}>
         <Header />
-        <div className="main-content">
-          <List updateRoute={this.updateRoute} />
-          <MapComponent ref={this.mapComponentRef} />
-        </div>
+
+        <MapComponent ref={this.mapComponentRef} />
       </div>
     );
   }

@@ -1,12 +1,12 @@
 /* component List */
 .list {
-    position: absolute;
+    /* position: absolute; */
     z-index: 1000;
     left: 0;
     background-color: white;
-    height: 1000px;
-    width: 20%;
-    max-height: 643px; /* Ví dụ: giới hạn chiều cao của div là 643px */
+    height: 90vh;
+    /* width: 20%; */
+    max-height: 100vw; /* Ví dụ: giới hạn chiều cao của div là 643px */
     overflow-y: auto;
   }
   .title {
@@ -24,10 +24,11 @@
     margin: 0 0 0 50% ;
     transform: translateX(-50%);
     height: 30px;
-    padding-left: 30px;
+    /* padding-left: 30px; */
     width: 80%;
     border-radius: 16px;
     justify-content: center;
+    /* margin-bottom: '15px'; */
   }
   
   .search {
@@ -45,16 +46,16 @@
   }
   
   .list-item {
-    border: 2px dashed #000;
-    border-radius: 5px;
-    margin-top: 5px;
+    /* border: 2px dashed #000;
+    border-radius: 5px; */
+    margin-top: 15px;
     position: relative;
   }
   
   .item {
   background-color: #EFF1F8;
-  border-radius: 5px;
-  width: 90%;
-  margin-left: 5%;
+  border-radius: 10px;
+  /* width: 90%; */
+  /* margin-left: 5%; */
   margin-bottom: 15px;
   }

@@ -8,7 +8,7 @@
   justify-content: space-between;
   align-items: center;
   background-color: #277bfc;
-  color: white;
+  color: black;
   flex-wrap: wrap; /* Cho phép các phần tử con wrap khi màn hình nhỏ */
   padding: 1rem; /* 16px */
 }
@@ -33,6 +33,7 @@
   line-height: 1;
   letter-spacing: 0.01em;
   text-align: left;
+  color: black;
 }
 
 .rightH {
