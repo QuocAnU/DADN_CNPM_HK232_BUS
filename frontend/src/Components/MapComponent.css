@@ -5,9 +5,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  
-  padding: 1rem 0;
-  background-color: #277BFC;
+
+  border: 1px solid rgb(173, 171, 171);
+  /* padding: 1rem 0; */
+  background-color: #ffffff;
+
   color: white;
 }
 #app-name {
@@ -49,7 +51,6 @@
 .nav a:hover {
   text-decoration: underline;
 }
-
 
 /* component List */
 .list {
@@ -126,16 +127,17 @@ outline:none;
 font-size:16px
 }
 .search-address {
-position: absolute;
-left: 21%;
-top: 1%;
-border:1px solid;
-width:fit-content;
-background:white;
-padding:5px;
-border-radius:12px;
-justify-content: center;
-z-index: 1000;
+  position: absolute;
+  border: 1px solid;
+  width: fit-content;
+  background: white;
+  margin-top: 2%;
+  margin-left: 2%;
+  padding: 5px;
+  border-radius: 12px;
+  justify-content: center;
+  z-index: 1000;
+
 }
 
 .header_1 {

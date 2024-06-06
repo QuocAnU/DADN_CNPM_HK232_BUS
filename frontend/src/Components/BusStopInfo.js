@@ -14,6 +14,7 @@ class BusStopInfo extends Component {
         try {
             const response = await axios.get('http://localhost:3001/adafruit/feed');
             // console.log("one more time")
+            // console.log(response.data);
             this.setState({ busData: response.data });
         } catch (error) {
             console.error('Error fetching bus locations:', error);
@@ -24,7 +25,8 @@ class BusStopInfo extends Component {
         this.setState({ activeTab1: tab });
         if (tab === 'bus') {
             this.props.fetchBusData();
-            this.busLocationInterval = setInterval(this.fetchBusData, 1000);
+            this.busLocationInterval = setInterval(this.fetchBusData, 3000);
+            // this function is call every 3 seconds
             // this.busLocationInterval = setInterval(this.fetchBusData, 1000);
         }
     };
@@ -32,6 +34,7 @@ class BusStopInfo extends Component {
     render() {
         const { busStop, onClose, onRouteClick } = this.props;
         const { busData } = this.state;
+        
         // if (busData) console.log(busData, this.state.activeTab1);
         const { activeTab1 } = this.state;
         return (
@@ -57,16 +60,16 @@ class BusStopInfo extends Component {
                     {this.state.activeTab1 === "bus" ?
 
                         busData &&
-                    <div>
-                        <p>Tuyến xe số: {busData.route_no}</p>
-                        <p>Biển số: {busData.number_plate}</p>
-                        <p>Tọa độ: {busData.latitude}, {busData.longitude}</p>
-                        <p>Số người: {busData.people_num}</p>
-                        <p>Nhiệt độ: {busData.temperature}</p>
-                        <p>Độ ẩm: {busData.humidty}</p>
-                    </div>
-                    
-                    : null
+                        <div>
+                            <p>Tuyến xe số: {busData.route_no}</p>
+                            <p>Biển số: {busData.number_plate}</p>
+                            <p>Tọa độ: {busData.latitude}, {busData.longitude}</p>
+                            <p>Số người: {busData.people_num}</p>
+                            <p>Nhiệt độ: {busData.temperature}</p>
+                            <p>Độ ẩm: {busData.humidity}</p>
+                        </div>
+
+                        : null
                     }
                 </div>
             </div>
