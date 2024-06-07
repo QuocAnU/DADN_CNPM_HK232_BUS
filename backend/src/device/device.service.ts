@@ -10,7 +10,8 @@ export class AdafruitService {
     const promises = this.feeds.map(feed => this.fetchLastDataForFeed(feed));
     const results = await Promise.all(promises);
     const data = results.reduce((acc, value, index) => {
-      acc[this.feeds[index]] = parseFloat(value);
+      const feedName = this.feeds[index].replace('-', '_'); 
+      acc[feedName] = parseFloat(value);
       return acc;
     }, {});
 

@@ -62,7 +62,7 @@ class MapComponent extends Component {
             }
         );
         this.fetchAllBusStops();
-        this.busLocationInterval = setInterval(this.fetchBusLocations, 100000);
+        // this.busLocationInterval = setInterval(this.fetchBusLocations, 3000);
     }
 
     componentWillUnmount() {
@@ -280,7 +280,7 @@ class MapComponent extends Component {
     mapRef = React.createRef();
 
     render() {
-
+        // console.log(this.state.busData);
         const { selectedBusStop, busStopsWithCoords, routeCoordinates, viewport, busData } = this.state;
         // console.log(busData)
         // if (selectedBusStop) {this.handleBusStopClick(selectedBusStop);}

@@ -1,6 +1,8 @@
 import sys
 from Adafruit_IO import MQTTClient
 import time
+import random
+import math
 
 AIO_FEED_ID = ["humidity", "latitude", "longitude", "people_num", "temperature"]
 AIO_USERNAME = "vantri15042003"
@@ -37,6 +39,22 @@ client.loop_background()
 counter = 10
 sensor_type = 0
 
+# Khoảng cách muốn di chuyển (đơn vị: mét)
+distance = 100  # 100 meters
+# Bán kính Trái Đất
+R = 6371000
+# Hàm tạo tọa độ ngẫu nhiên trong khoảng cách cho trước
+def random_location_within_distance(latitude, longitude, distance):
+    # Chọn ngẫu nhiên một góc giữa 0 và 360 độ
+    angle = random.uniform(0, 360)
+    angle_rad = math.radians(angle)
+    
+    # Tính tọa độ mới
+    new_latitude = latitude + (distance / R) * (180 / math.pi) * math.sin(angle_rad)
+    new_longitude = longitude + (distance / R) * (180 / math.pi) * math.cos(angle_rad) / math.cos(math.radians(latitude))
+    
+    return new_latitude, new_longitude
+
 while True:
     counter -= 1
     if counter <= 0:
@@ -44,13 +62,16 @@ while True:
         # TODO: Thu thập dữ liệu cảm biến
         temp = 30.33
         humid = 40.5
-        latitude = 10.345678
+        latitude = 10.77
         longitude = 106.345678
         people_num = 30
 
+        # Tạo tọa độ ngẫu nhiên trong khoảng cách cho trước
+        new_latitude, new_longitude = random_location_within_distance(latitude, longitude, distance)
+
         # Chuyển đổi giá trị float sang chuỗi
-        latitude_str = "{:.6f}".format(latitude)
-        longitude_str = "{:.6f}".format(longitude)
+        latitude_str = "{:.6f}".format(new_latitude)
+        longitude_str = "{:.6f}".format(new_longitude)
 
         client.publish("temperature", temp)
         client.publish("humidity", humid)
