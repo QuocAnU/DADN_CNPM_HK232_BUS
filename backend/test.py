@@ -44,7 +44,7 @@ while True:
         # TODO: Thu thập dữ liệu cảm biến
         temp = 30.33
         humid = 40.5
-        latitude = 10.345678
+        latitude = 10.06
         longitude = 106.345678
         people_num = 30
 
