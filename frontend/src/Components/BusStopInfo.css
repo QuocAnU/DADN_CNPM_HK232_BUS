@@ -9,6 +9,7 @@
     border-radius: 5px;
     z-index: 1500;
     width: 25%;
+    left: 0%;
 }
 .stop-list-overlay {
     position: relative;
